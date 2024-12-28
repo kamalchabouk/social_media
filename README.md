@@ -53,14 +53,20 @@ A social media platform where users can create posts, comment, and interact with
    SECRET_KEY=your_secret_key
    ```
 
-6. Run the database migrations:
+
+6. Run the to make migrations:
    ```bash
-   python manage.py migrate
+   python3 manage.py makemigrations
+   ```
+ 
+7. Run the database migrations:
+   ```bash
+   python3 manage.py migrate
    ```
 
-7. Start the Django development server:
+8. Start the Django development server:
    ```bash
-   python manage.py runserver
+   python3 manage.py runserver
    ```
 
 Once the frontend is integrated with React, you'll update this section with additional instructions for setting up the React app.
