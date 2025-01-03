@@ -8,6 +8,7 @@ A social media platform where users can create posts, comment, and interact with
 - Ability to create, view, and delete posts
 - Commenting system on posts
 - Like and share posts
+- Follow and UnFollow other Users 
 - Real-time updates (using WebSockets or polling)
 - Mobile-responsive design (for future frontend)
 
