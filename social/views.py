@@ -1,4 +1,4 @@
-from django.shortcuts import render
+from django.shortcuts import render,redirect
 from django.urls import reverse_lazy
 from django.contrib.auth.mixins import UserPassesTestMixin, LoginRequiredMixin
 from django.views import View
@@ -101,6 +101,8 @@ class CommentDeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
         comment = self.get_object()
         return self.request.user == comment.author
 
+
+      
 
 
 
