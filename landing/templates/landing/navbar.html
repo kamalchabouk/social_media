@@ -29,8 +29,12 @@
             <div class="nav-item dropdown">
               <a class="nav-link dropdown-toggle text-dark" data-bs-toggle="dropdown" href="#" role="button" aria-expanded="false"><i class="fas fa-user"></i></a>
               <ul class="dropdown-menu">
-                <li><a class="dropdown-item" href="#">Profile</a></li>
-                <li><a class="dropdown-item" href="{% url 'account_logout' %}">Sign Out</a></li>
+                {% if user.is_authenticated %}
+                <a class="dropdown-item" href="{% url 'accounts:profile' user.profile.pk %}">Profile</a>
+              {% else %}
+                <p>Please log in to see your profile.</p>
+              {% endif %}
+              <li><a class="dropdown-item" href="{% url 'account_logout' %}">Sign Out</a></li>
               </ul>
             </div>
           {% endif %}

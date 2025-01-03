@@ -24,6 +24,7 @@
             <div class="col-md-5 col-sm-12 border-bottom position-relative">
                 <p><strong>{{ post.author }}</strong> {{ post.created_on }}</p>
                 <p>{{ post.body }}</p>
+                
                 <a class="stretched-link" href="{% url 'post-detail' post.pk %}"></a>
             </div>
         </div>
