@@ -8,6 +8,8 @@ class Post(models.Model):
     author = models.ForeignKey(User, on_delete=models.CASCADE)
     image = models.ImageField(upload_to='posts/images/', null=True, blank=True)
     video = models.FileField(upload_to='posts/videos/', null=True, blank=True)
+    likes = models.ManyToManyField(User,blank=True,related_name='likes')
+    dislikes = models.ManyToManyField(User,blank=True,related_name='dislike')
 
 class Comment(models.Model):
     comment = models.TextField()

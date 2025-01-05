@@ -15,14 +15,14 @@
             <h3 class="py-4">{{ profile.name }}
                 <span>
                     {% if request.user == user %}
-                        <a href="{% url 'profile-edit' profile.pk %}" style="color: #333"><i class="far fa-edit"></i></a>
+                        <a href="{% url 'accounts:profile-edit' profile.pk %}" style="color: #333"><i class="far fa-edit"></i></a>
                     {% endif %}
                 </span>
                 {% else %}
                 <h3 class="py-4">{{ user.username }}
                     <span>
                         {% if request.user == user %}
-                            <a href="{% url 'profile-edit' profile.pk %}" style="color: #333"><i class="far fa-edit"></i></a>
+                            <a href="{% url 'accounts:profile-edit' profile.pk %}" style="color: #333"><i class="far fa-edit"></i></a>
                         {% endif %}
                     </span>
                 </h3>
@@ -68,6 +68,24 @@
             <div class="position-relative">
                 <p>{{ post.body }}</p>
                 <a href="{% url 'post-detail' post.pk %}" class="stretched-link"></a>
+            </div>
+            <div class="d-flex flex-row">
+                <form method="POST" action="{% url 'like' post.pk %}">
+                    {% csrf_token %}
+                    <input type="hidden" name="next" value="{{ request.path }}">
+                    <button style="background-color: transparent; border: none; box-shadow: none;" type="submit">
+                        <i class="far fa-thumbs-up"> <span>{{ post.likes.all.count }}</span></i>
+                    </button>
+                </form>
+
+                <form method="POST" action="{% url 'dislike' post.pk %}">
+                    {% csrf_token %}
+                    <input type="hidden" name="next" value="{{ request.path }}">
+                    <button style="background-color: transparent; border: none; box-shadow: none;" type="submit">
+                        <i class="far fa-thumbs-down"><span>{{ post.dislikes.all.count }}</span></i>
+                    </button>
+                </form>
+
             </div>
         </div>
     </div>

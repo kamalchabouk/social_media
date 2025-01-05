@@ -1,4 +1,5 @@
 from django.shortcuts import render,redirect
+from django.db.models import Q
 from .models import UserProfile
 from django.views import View
 from social.models import Post
@@ -63,3 +64,18 @@ class RemoveFollower(LoginRequiredMixin, View):
         profile.followers.remove(request.user)
 
         return redirect('accounts:profile', pk=profile.pk)
+    
+
+class UserSearch(View):
+    def get(self, request, *args, **kwargs):
+        query = self.request.GET.get('query')
+
+        profile_list = UserProfile.objects.filter(
+            Q(user__username__icontains=query)
+        )
+
+        context = {
+            'profile_list': profile_list
+        }
+
+        return render(request, 'accounts/search.html', context)
