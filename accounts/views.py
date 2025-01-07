@@ -1,6 +1,7 @@
 from django.shortcuts import render,redirect
 from django.db.models import Q
 from .models import UserProfile
+from .forms import UserProfileForm
 from django.views import View
 from social.models import Post
 from django.views.generic.edit import UpdateView
@@ -40,12 +41,12 @@ class ProfileView(View):
 
 class ProfileEditView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
     model = UserProfile
-    fields = ['name', 'bio', 'birth_date', 'location', 'picture']
+    form_class = UserProfileForm
     template_name = 'accounts/profile_edit.html'
 
     def get_success_url(self):
         pk = self.kwargs['pk']
-        return reverse_lazy('profile', kwargs={'pk': pk})
+        return reverse_lazy('accounts:profile', kwargs={'pk': pk})
 
     def test_func(self):
         profile = self.get_object()
@@ -79,3 +80,15 @@ class UserSearch(View):
         }
 
         return render(request, 'accounts/search.html', context)
+    
+class ListFollowers(View):
+    def get(self, request, pk, *args, **kwargs):
+        profile = UserProfile.objects.get(pk=pk)
+        followers = profile.followers.all()
+
+        context = {
+            'profile': profile,
+            'followers': followers,
+        }
+
+        return render(request, 'accounts/followers_list.html', context)

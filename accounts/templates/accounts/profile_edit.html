@@ -34,8 +34,8 @@
 <script>
     document.addEventListener('DOMContentLoaded', function () {
         flatpickr("#id_birth_date", {
-            dateFormat: "d-m-Y", // Format for the date, you can change this to whatever format you prefer
-            maxDate: "today", // This limits the user from picking a future date
+            dateFormat: "d-m-Y",  // Use the format Django expects
+            maxDate: "today",     // Limit to today
             minDate: "01-01-1900", // You can limit the birthdate range if needed
         });
     });
