@@ -24,7 +24,9 @@
                     {% endif %}
                     </p>
                 </div>
-
+                {% if post.image %}
+                <img src="{{ post.image.url }}" class="post-image">
+                {% endif %}
             <p>{{ post.body }}</p>
 
             <div class="d-flex flex-row">
