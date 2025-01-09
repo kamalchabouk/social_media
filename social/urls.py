@@ -1,5 +1,21 @@
 from django.urls import path
-from .views import PostListView,PostDetailView,PostEditView,PostDeleteView,CommentDeleteView,AddCommentLike,AddCommentDislike,CommentUpdateView,AddLike,AddDisLike,CommentReplyView
+from .views import (
+    PostListView,
+    PostDetailView,
+    PostEditView,
+    PostDeleteView,
+    CommentDeleteView,
+    AddCommentLike,
+    AddCommentDislike,
+    CommentUpdateView,
+    AddLike,
+    AddDisLike,
+    CommentReplyView,
+    PostNotification,
+    FollowNotification,
+    RemoveNotification
+)
+
 
 urlpatterns = [
     path('', PostListView.as_view(), name='post-list'),
@@ -13,4 +29,8 @@ urlpatterns = [
     path('post/<int:post_pk>/comment/<int:pk>/edit',CommentUpdateView.as_view(),name='comment-edit'),
     path('post/<int:pk>/like', AddLike.as_view(), name='like'),
     path('post/<int:pk>/dislike', AddDisLike.as_view(), name='dislike'),
+    path('notification/<int:notification_pk>/post/<int:post_pk>',PostNotification.as_view(),name='post-notification'),
+    path('notification/<int:notification_pk>/post/<int:profile_pk>',FollowNotification.as_view(),name='follow-notification'),
+    path('notification/delete/<int:notification_pk>',RemoveNotification.as_view(),name='notification-delete'),
+
 ]

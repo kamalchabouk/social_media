@@ -3,7 +3,7 @@ from django.db.models import Q
 from .models import UserProfile
 from .forms import UserProfileForm
 from django.views import View
-from social.models import Post
+from social.models import Post,Notification
 from django.views.generic.edit import UpdateView
 from django.contrib.auth.mixins import UserPassesTestMixin,LoginRequiredMixin
 from django.urls import reverse_lazy
@@ -56,6 +56,9 @@ class AddFollower(LoginRequiredMixin, View):
     def post(self, request, pk, *args, **kwargs):
         profile = UserProfile.objects.get(pk=pk)
         profile.followers.add(request.user)
+
+        notification = Notification.objects.create(notification_type=3, from_user=request.user,to_user=profile.user)
+
 
         return redirect('accounts:profile', pk=profile.pk)
 
