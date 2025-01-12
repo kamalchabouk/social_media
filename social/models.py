@@ -1,7 +1,9 @@
 from django.db import models
 from django.utils import timezone
 from django.contrib.auth.models import User
-
+from cryptography.fernet import Fernet
+""" from django.conf import settings
+from .services.encryption_service import EncryptionService """
 
 class Post(models.Model):
     body =models.TextField()
@@ -44,3 +46,40 @@ class Notification(models.Model):
 	user_has_seen = models.BooleanField(default=False)
      
 
+class ThreadModel(models.Model):
+    user = models.ForeignKey(User,on_delete=models.CASCADE,related_name='+')
+    receiver = models.ForeignKey(User,on_delete=models.CASCADE,related_name='+')
+
+
+class MessageModel(models.Model):
+    thread =models.ForeignKey('ThreadModel',related_name='+',on_delete=models.CASCADE, blank=True,null=True)
+    sender_user = models.ForeignKey(User,on_delete=models.CASCADE,related_name='+')
+    receiver_user = models.ForeignKey(User,on_delete=models.CASCADE,related_name='+')
+    encrypted_body = models.TextField(blank=True, null=True)  # Encrypted field for message body
+    body = models.CharField(max_length=1000)
+    image = models.ImageField(upload_to='uploads/message_photos',blank=True,null=True)
+    date = models.DateTimeField(default=timezone.now)
+    is_read = models.BooleanField(default=False)
+
+"""     def save(self, *args, **kwargs):
+        encryption_service = EncryptionService(settings.ENCRYPTION_KEY)
+
+        # Encrypt message body
+        if self.body:
+            self.encrypted_body = encryption_service.encrypt_text(self.body)
+            self.body = None  # Clear plaintext after encryption
+
+        # Encrypt image if present
+        if self.image and not self._state.adding:  # Only encrypt on update
+            encryption_service.encrypt_file(self.image.path)
+
+        super().save(*args, **kwargs)
+
+    def get_decrypted_body(self):
+        encryption_service = EncryptionService(settings.ENCRYPTION_KEY)
+        return encryption_service.decrypt_text(self.encrypted_body)
+
+    def decrypt_image(self):
+        if self.image:
+            encryption_service = EncryptionService(settings.ENCRYPTION_KEY)
+            encryption_service.decrypt_file(self.image.path) """

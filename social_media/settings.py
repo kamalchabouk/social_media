@@ -144,3 +144,5 @@ LOGIN_REDIRECT_URL = 'post-list'
 ACCOUNT_EMAIL_REQUIRED = True
 EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 
+# Encryption key for securing message content and images
+ENCRYPTION_KEY = os.getenv('ENCRYPTION_KEY')  # Set this securely in environment variables
