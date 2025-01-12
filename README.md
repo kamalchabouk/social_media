@@ -6,6 +6,7 @@ A social media platform where users can create posts, comment, and interact with
 - User registration and login (using Django Allauth) so the User can use facebook,instagram,google or apple to log in.
 - Profile management (users can update their profile picture, bio, etc.)
 - Ability to create, view, and delete posts
+- Sending DMS
 - Commenting system on posts
 - Like and share posts
 - Follow and UnFollow other Users 
