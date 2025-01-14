@@ -104,7 +104,7 @@ background-color: #ddd;
     background-color: #f3f3f3 ;
     border-radius: 30px;
     padding: 10px 25px;
-    width: 25%;
+    width: 35%;
     float: left;   
 }
 
@@ -113,6 +113,25 @@ background-color: #ddd;
     color: #fff;
     border-radius: 30px;
     padding: 10px 25px;
-    width: 25%;
-    float: right;
+    width: 35%;
+}
+
+.message-receiver-container{
+    margin-left:auto ;
+    margin-right: 0;
+}
+
+.message-image{
+    border-radius: 10px;
+    max-width: 20%;
+    height: auto;
+    
+}
+@media (max-width: 5px) {
+    .message-image {
+        max-width: 10%; /* Increase size for smaller screens */
+    }
+}
+.inbox-icon{
+    margin-right:5px ;
 }
