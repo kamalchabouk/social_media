@@ -10,6 +10,8 @@ from .models import Post, Comment,Notification,ThreadModel,MessageModel
 from .forms import PostForm, CommentForm,ThreadForm,MessageForm
 from accounts.models import UserProfile
 from django.contrib import messages
+from cryptography.fernet import Fernet
+from django.conf import settings
 
 
 
@@ -354,7 +356,7 @@ class CreateThread(View):
         form = ThreadForm(request.POST)
 
         username = request.POST.get('username')
-
+        
         try:
             receiver = User.objects.get(username=username)
             if ThreadModel.objects.filter(user=request.user, receiver=receiver).exists():
@@ -381,6 +383,7 @@ class ThreadView(View):
         form = MessageForm()
         thread = ThreadModel.objects.get(pk=pk)
         message_list = MessageModel.objects.filter(thread__pk__contains=pk)
+        
         context = {
             'thread': thread,
             'form': form,
@@ -391,6 +394,7 @@ class ThreadView(View):
 
 class CreateMessage(View):
     def post(self, request, pk, *args, **kwargs):
+        fernet = Fernet(settings.ENCRYPT_KEY)
         form = MessageForm(request.POST, request.FILES)
         thread = ThreadModel.objects.get(pk=pk)
         if thread.receiver == request.user:
@@ -400,6 +404,18 @@ class CreateMessage(View):
 
         if form.is_valid():
             message = form.save(commit=False)
+
+            # enrypt the messages 
+            message_original = form.cleaned_data['body']
+            message_bytes = message_original.encode('utf-8')
+            message_encrypted = fernet.encrypt(message_bytes)
+            message_decoded = message_encrypted.decode('utf-8')
+            message.body = message_decoded
+
+
+
+
+            
             message.thread = thread
             message.sender_user = request.user
             message.receiver_user = receiver
@@ -412,14 +428,9 @@ class CreateMessage(View):
             thread=thread
         )
         return redirect('thread', pk=pk)
+    
+#    def get(self,request,pk,*args,**kwargs):
 
-""" class MessageView(View):
-    def get(self, request, message_id):
-        message = get_object_or_404(MessageModel, id=message_id)
 
-        # Ensure only sender or receiver can access the message
-        if request.user != message.sender_user and request.user != message.receiver_user:
-            return HttpResponseForbidden('You are not authorized to view this message.')
 
-        decrypted_body = message.get_decrypted_body()
-        return JsonResponse({'body': decrypted_body, 'date': message.date}) """
+

@@ -2,8 +2,7 @@ from django.db import models
 from django.utils import timezone
 from django.contrib.auth.models import User
 from cryptography.fernet import Fernet
-""" from django.conf import settings
-from .services.encryption_service import EncryptionService """
+from django.conf import settings
 
 class Post(models.Model):
     body =models.TextField()
@@ -57,30 +56,22 @@ class MessageModel(models.Model):
     sender_user = models.ForeignKey(User,on_delete=models.CASCADE,related_name='+')
     receiver_user = models.ForeignKey(User,on_delete=models.CASCADE,related_name='+')
     encrypted_body = models.TextField(blank=True, null=True)  # Encrypted field for message body
-    body = models.CharField(max_length=1000)
+    body = models.TextField(blank=True, null=True)
     image = models.ImageField(upload_to='uploads/message_photos',blank=True,null=True)
     date = models.DateTimeField(default=timezone.now)
     is_read = models.BooleanField(default=False)
 
-"""     def save(self, *args, **kwargs):
-        encryption_service = EncryptionService(settings.ENCRYPTION_KEY)
+    @property
+    def body_decrypted(self):
+        """
+        Decrypts the encrypted body if it's valid. Returns None or a fallback message if not decryptable.
+        """
+        if not self.body:
+            return ('not working')  # No message body to decrypt
+        try:
+            fernet = Fernet(settings.ENCRYPT_KEY)
+            decrypted_message = fernet.decrypt(self.body.encode('utf-8'))
+            return decrypted_message.decode('utf-8')
+        except Exception as e:
+            return "Unable to decrypt message"  # Fallback message
 
-        # Encrypt message body
-        if self.body:
-            self.encrypted_body = encryption_service.encrypt_text(self.body)
-            self.body = None  # Clear plaintext after encryption
-
-        # Encrypt image if present
-        if self.image and not self._state.adding:  # Only encrypt on update
-            encryption_service.encrypt_file(self.image.path)
-
-        super().save(*args, **kwargs)
-
-    def get_decrypted_body(self):
-        encryption_service = EncryptionService(settings.ENCRYPTION_KEY)
-        return encryption_service.decrypt_text(self.encrypted_body)
-
-    def decrypt_image(self):
-        if self.image:
-            encryption_service = EncryptionService(settings.ENCRYPTION_KEY)
-            encryption_service.decrypt_file(self.image.path) """
