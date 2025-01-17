@@ -6,7 +6,7 @@ from django.contrib.auth.models import User
 from django.views import View
 from django.views.generic.edit import UpdateView, DeleteView
 from django.db.models import Q
-from .models import Post, Comment,Notification,ThreadModel,MessageModel
+from .models import Post, Comment,Notification,ThreadModel,MessageModel,Image
 from .forms import PostForm, CommentForm,ThreadForm,MessageForm
 from accounts.models import UserProfile
 from django.contrib import messages
@@ -17,9 +17,9 @@ from django.conf import settings
 
 class PostListView(LoginRequiredMixin, View):
     def get(self, request, *args, **kwargs):
-        logged_in_user =request.user
+        logged_in_user = request.user
         posts = Post.objects.filter(
-            author__profile__followers__in =[logged_in_user]
+            author__profile__followers__in=[logged_in_user.id]
         ).order_by('-created_on')
         form = PostForm()
 
@@ -27,24 +27,34 @@ class PostListView(LoginRequiredMixin, View):
             'post_list': posts,
             'form': form,
         }
+
         return render(request, 'social/post_list.html', context)
 
     def post(self, request, *args, **kwargs):
-        logged_in_user =request.user
+        logged_in_user = request.user
         posts = Post.objects.filter(
-            author__profile__followers__in =[logged_in_user]
-        ).order_by('-created_on')        
-        form = PostForm(request.POST,request.FILES)
+            author__profile__followers__in=[logged_in_user.id]
+        ).order_by('-created_on')
+        form = PostForm(request.POST, request.FILES)
+        files = request.FILES.getlist('image')
 
         if form.is_valid():
             new_post = form.save(commit=False)
             new_post.author = request.user
             new_post.save()
 
+            for f in files:
+                img = Image(image=f)
+                img.save()
+                new_post.image.add(img)
+
+            new_post.save()
+
         context = {
             'post_list': posts,
             'form': form,
         }
+
         return render(request, 'social/post_list.html', context)
 
 class PostDetailView(LoginRequiredMixin, View):

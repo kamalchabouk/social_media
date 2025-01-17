@@ -8,7 +8,7 @@ class Post(models.Model):
     body =models.TextField()
     created_on = models.DateTimeField(default=timezone.now)
     author = models.ForeignKey(User, on_delete=models.CASCADE)
-    image = models.ImageField(upload_to='posts/images/', null=True, blank=True)
+    image = models.ManyToManyField('Image', blank=True)
     video = models.FileField(upload_to='posts/videos/', null=True, blank=True)
     likes = models.ManyToManyField(User,blank=True,related_name='likes')
     dislikes = models.ManyToManyField(User,blank=True,related_name='dislike')
@@ -75,3 +75,5 @@ class MessageModel(models.Model):
         except Exception as e:
             return "Unable to decrypt message"  # Fallback message
 
+class Image(models.Model):
+	image = models.ImageField(upload_to='uploads/post_photos', blank=True, null=True)
