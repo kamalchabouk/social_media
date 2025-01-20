@@ -3,11 +3,12 @@ from django.urls import reverse_lazy
 from django.http import HttpResponseRedirect,HttpResponse,JsonResponse,HttpResponseForbidden
 from django.contrib.auth.mixins import UserPassesTestMixin, LoginRequiredMixin
 from django.contrib.auth.models import User
+from django.utils import timezone
 from django.views import View
 from django.views.generic.edit import UpdateView, DeleteView
 from django.db.models import Q
 from .models import Post, Comment,Notification,ThreadModel,MessageModel,Image
-from .forms import PostForm, CommentForm,ThreadForm,MessageForm
+from .forms import PostForm, CommentForm,ThreadForm,MessageForm,ShareForm
 from accounts.models import UserProfile
 from django.contrib import messages
 from cryptography.fernet import Fernet
@@ -20,11 +21,13 @@ class PostListView(LoginRequiredMixin, View):
         logged_in_user = request.user
         posts = Post.objects.filter(
             author__profile__followers__in=[logged_in_user.id]
-        ).order_by('-created_on')
+        )
         form = PostForm()
+        share_form = ShareForm()
 
         context = {
             'post_list': posts,
+            'shareform':share_form,
             'form': form,
         }
 
@@ -34,8 +37,9 @@ class PostListView(LoginRequiredMixin, View):
         logged_in_user = request.user
         posts = Post.objects.filter(
             author__profile__followers__in=[logged_in_user.id]
-        ).order_by('-created_on')
+        )
         form = PostForm(request.POST, request.FILES)
+        share_form = ShareForm()
         files = request.FILES.getlist('image')
 
         if form.is_valid():
@@ -52,6 +56,7 @@ class PostListView(LoginRequiredMixin, View):
 
         context = {
             'post_list': posts,
+            'shareform':share_form,
             'form': form,
         }
 
@@ -149,6 +154,29 @@ class PostDeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
     def test_func(self):
         post = self.get_object()
         return self.request.user == post.author
+
+
+class SharedPostView(View):
+    def post(self, request, pk, *args, **kwargs):
+        original_post = get_object_or_404(Post, pk=pk)
+        form = ShareForm(request.POST)
+
+        if form.is_valid():
+            new_post = Post(
+                shared_body=form.cleaned_data['body'],
+                body=original_post.body,
+                author=original_post.author,
+                created_on=original_post.created_on,
+                shared_user=request.user,
+                shared_on=timezone.now(),
+            )
+            new_post.save()
+
+            # Link all images from the original post
+            new_post.image.set(original_post.image.all())
+            new_post.save()
+
+        return redirect('post-list')
 
 class CommentDeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
     model = Comment
@@ -439,7 +467,6 @@ class CreateMessage(View):
         )
         return redirect('thread', pk=pk)
     
-#    def get(self,request,pk,*args,**kwargs):
 
 
 

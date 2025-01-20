@@ -2,6 +2,7 @@ from django.shortcuts import render,redirect
 from django.db.models import Q
 from .models import UserProfile
 from .forms import UserProfileForm
+from social.forms import ShareForm
 from django.views import View
 from social.models import Post,Notification
 from django.views.generic.edit import UpdateView
@@ -13,9 +14,9 @@ class ProfileView(View):
     def get(self, request, pk, *args, **kwargs):
         profile = UserProfile.objects.get(pk=pk)
         user = profile.user
-        posts = Post.objects.filter(author=user).order_by('-created_on')
-
+        posts = Post.objects.filter(author=user)
         followers = profile.followers.all()
+        share_form = ShareForm()
 
         if len(followers) == 0:
             is_following = False
@@ -35,6 +36,7 @@ class ProfileView(View):
             'posts': posts,
             'number_of_followers': number_of_followers,
             'is_following': is_following,
+            'shareform':share_form,
         }
 
         return render(request, 'accounts/profile.html', context)

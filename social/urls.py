@@ -18,7 +18,8 @@ from .views import (
     ListThreads,
     ThreadView,
     CreateMessage,
-    ThreadNotification
+    ThreadNotification,
+    SharedPostView
 )
 
 
@@ -32,6 +33,7 @@ urlpatterns = [
     path('post/<int:post_pk>/comment/<int:pk>/dislike', AddCommentDislike.as_view(), name='comment-dislike'),
     path('post/<int:post_pk>/comment/<int:pk>/reply',CommentReplyView.as_view(),name='comment-reply'),
     path('post/<int:post_pk>/comment/<int:pk>/edit',CommentUpdateView.as_view(),name='comment-edit'),
+    path('post/<int:pk>/share',SharedPostView.as_view(),name='share-post'),
     path('post/<int:pk>/like', AddLike.as_view(), name='like'),
     path('post/<int:pk>/dislike', AddDisLike.as_view(), name='dislike'),
     path('notification/<int:notification_pk>/post/<int:post_pk>',PostNotification.as_view(),name='post-notification'),

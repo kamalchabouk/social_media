@@ -5,13 +5,23 @@ from cryptography.fernet import Fernet
 from django.conf import settings
 
 class Post(models.Model):
+    shared_body = models.TextField(blank=True,null=True)
     body =models.TextField()
     created_on = models.DateTimeField(default=timezone.now)
+    shared_on = models.DateTimeField(default=timezone.now)
     author = models.ForeignKey(User, on_delete=models.CASCADE)
+    shared_user= models.ForeignKey(User,on_delete=models.CASCADE,null=True,blank=True,related_name='+')
     image = models.ManyToManyField('Image', blank=True)
     video = models.FileField(upload_to='posts/videos/', null=True, blank=True)
     likes = models.ManyToManyField(User,blank=True,related_name='likes')
     dislikes = models.ManyToManyField(User,blank=True,related_name='dislike')
+    
+
+    class Meta:
+        ordering = ['-created_on', '-shared_on']
+
+        
+
 
 
 class Comment(models.Model):

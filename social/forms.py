@@ -41,6 +41,15 @@ class PostForm(forms.ModelForm):
         fields = ['body']
 
 
+class ShareForm(forms.Form):
+    body = forms.CharField(
+        label='',
+        widget=forms.Textarea(attrs={
+            'rows': '3',
+            'placeholder': 'Say Something...'
+            }))
+
+
 class CommentForm(forms.ModelForm):
     comment = forms.CharField(
         label='',
