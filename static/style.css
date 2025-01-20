@@ -135,3 +135,6 @@ background-color: #ddd;
 .inbox-icon{
     margin-right:5px ;
 }
+.body a {
+    text-decoration: none;
+}

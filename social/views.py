@@ -1,14 +1,14 @@
-from django.shortcuts import render,redirect,get_object_or_404
+from django.shortcuts import render, redirect, get_object_or_404
 from django.urls import reverse_lazy
-from django.http import HttpResponseRedirect,HttpResponse,JsonResponse,HttpResponseForbidden
+from django.http import HttpResponseRedirect, HttpResponse, JsonResponse, HttpResponseForbidden
 from django.contrib.auth.mixins import UserPassesTestMixin, LoginRequiredMixin
 from django.contrib.auth.models import User
 from django.utils import timezone
 from django.views import View
 from django.views.generic.edit import UpdateView, DeleteView
 from django.db.models import Q
-from .models import Post, Comment,Notification,ThreadModel,MessageModel,Image
-from .forms import PostForm, CommentForm,ThreadForm,MessageForm,ShareForm
+from .models import Post, Comment, Notification, ThreadModel, MessageModel, Image, Tag
+from .forms import PostForm, CommentForm, ThreadForm, MessageForm, ShareForm, ExploreForm
 from accounts.models import UserProfile
 from django.contrib import messages
 from cryptography.fernet import Fernet
@@ -46,6 +46,8 @@ class PostListView(LoginRequiredMixin, View):
             new_post = form.save(commit=False)
             new_post.author = request.user
             new_post.save()
+
+            new_post.create_tags()
 
             for f in files:
                 img = Image(image=f)
@@ -85,6 +87,8 @@ class PostDetailView(LoginRequiredMixin, View):
             new_comment.author = request.user
             new_comment.post = post
             new_comment.save()
+
+            new_comment.create_tags()
         
         comments = Comment.objects.filter(post=post).order_by('-created_on')
 
@@ -470,4 +474,44 @@ class CreateMessage(View):
 
 
 
+class Explore(View):
+    def get(self, request, *args, **kwargs):
+        query = self.request.GET.get('query')
+        tag = Tag.objects.filter(name=query).first()
+        explore_form = ExploreForm()
 
+        if tag:
+            posts = Post.objects.filter(tags__in=[tag])
+        else:
+            posts = Post.objects.all()
+
+        context = {
+            'tag' : tag,
+            'posts': posts,
+            'explore_form':explore_form,
+        }
+
+        return render(request, 'social/explore.html', context)
+    
+    def post(self,request,*args,**kwargs):
+        explore_form = ExploreForm(request.POST)
+        if explore_form.is_valid():
+            query = explore_form.cleaned_data['query']
+            tag = Tag.objects.filter(name=query).first()
+
+            posts = None
+            if tag:
+                posts = Post.objects.filter(tags__in=[tag])
+            
+            if posts:
+                context = {
+                    'tag': tag,
+                    'posts':posts,
+                }
+            else:
+                context = {
+                    'tag': tag,
+                }
+
+            return HttpResponseRedirect(f'/social/explore?query={query}')
+        return HttpResponseRedirect('/social/explore')

@@ -79,3 +79,12 @@ class MessageForm(forms.ModelForm):
     class Meta:
         model = MessageModel
         fields = ['body', 'image']
+
+
+class ExploreForm(forms.Form):
+    query = forms.CharField(
+        label='',
+        widget=forms.TextInput(attrs={
+            'placeholder' : 'Explore tags'
+        })
+    )

@@ -19,7 +19,8 @@ from .views import (
     ThreadView,
     CreateMessage,
     ThreadNotification,
-    SharedPostView
+    SharedPostView,
+    Explore
 )
 
 
@@ -44,5 +45,5 @@ urlpatterns = [
     path('inbox/create-thread',CreateThread.as_view(),name='create-thread'),
     path('inbox/<int:pk>/',ThreadView.as_view(),name='thread'),
     path('inbox/<int:pk>/create-message',CreateMessage.as_view(),name='create-message'),
-
+    path('explore/',Explore.as_view(),name='explore'),
 ]
