@@ -15,7 +15,7 @@ A social media platform where users can create posts, share other posts, like, u
 ## Technologies Used
 
 - **Backend**: Django (Python)
-- **Frontend**: React (implemented with authentication, other features in progress)
+- **Frontend**: React Vite (implemented with authentication, other features in progress)
 - **Database**: MariaDB
 - **Authentication**: Django Allauth with Google login integration
 - **Version Control**: Git, GitHub
