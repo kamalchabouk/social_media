@@ -1,7 +1,7 @@
 import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
-import { GOOGLE_ACCESS_TOKEN } from "../token";
+import { GOOGLE_ACCESS_TOKEN } from "../../api/token";
 
 function RedirectGoogleAuth() {
   const navigate = useNavigate();
@@ -36,7 +36,7 @@ function RedirectGoogleAuth() {
     }
   }, [navigate]);
 
-  return  <div> Logging In........</div>
+  return <div> Logging In........</div>;
 }
 
 export default RedirectGoogleAuth;
