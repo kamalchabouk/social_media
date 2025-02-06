@@ -2,14 +2,15 @@ import React from "react";
 import { Link } from "react-router-dom";
 import logo from "../assets/logo.png";
 import "../styles/Navbar.css";
-import { useAuthentication } from "../auth";
+import { useAuthentication } from "../api/auth";
 
 function Navbar() {
-  const { isAuthorized, logout } = useAuthentication();
+  const { isAuthorized, userId, logout } = useAuthentication();
 
   const handleLogout = () => {
     logout();
   };
+
   return (
     <div className="navbar">
       <Link to="/" className="navbar-logo-link">
@@ -28,11 +29,16 @@ function Navbar() {
       </ul>
       <ul className="navbar-menu-right">
         {isAuthorized ? (
-          <li>
-            <Link onClick={handleLogout} to="/logout" className="button-link">
-              Logout
-            </Link>
-          </li>
+          <>
+            <li>
+              <Link onClick={handleLogout} to="/logout" className="button-link">
+                Logout
+              </Link>
+            </li>
+            <li>
+              <a href={`/profile/${userId}`}>My Profile</a>
+            </li>
+          </>
         ) : (
           <>
             <li>

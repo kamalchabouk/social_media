@@ -1,10 +1,10 @@
 import React, { ReactNode, useState } from "react";
 import { Navigate } from "react-router-dom";
-import { useAuthentication } from "../auth";
+import { useAuthentication } from "../../api/auth";
 
 interface ProtectedRouteProps {
-    children: ReactNode;
-  }
+  children: ReactNode;
+}
 function ProtectedRoute({ children }: ProtectedRouteProps) {
   const { isAuthorized } = useAuthentication();
 

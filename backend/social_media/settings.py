@@ -15,7 +15,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = os.getenv('SECRET_KEY')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = os.getenv('DEBUG') == 'True'
+DEBUG = 'True'
 
 ALLOWED_HOSTS = ['*']
 
@@ -23,6 +23,7 @@ ALLOWED_HOSTS = ['*']
 # Application definition
 
 INSTALLED_APPS = [
+    'corsheaders',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -42,8 +43,9 @@ INSTALLED_APPS = [
     'allauth.socialaccount.providers.google',
     'rest_framework.authtoken',    
     'rest_framework',
+    'rest_framework_simplejwt',
     'dj_rest_auth',
-    'corsheaders',
+    
 
 ]
 SITE_ID = 2
@@ -63,6 +65,8 @@ REST_FRAMEWORK = {
 SIMPLE_JWT ={
     'ACCESS_TOKEN_LIFETIME':timedelta(minutes=30),
     'REFRESH_TOKEN_LIFETIME':timedelta(days=1),
+    'ROTATE_REFRESH_TOKENS': False,
+    'BLACKLIST_AFTER_ROTATION': False,
 }
 
 """ HEADLESS_FRONTEND_URLS = {
@@ -116,6 +120,7 @@ CORS_ALLOWED_ORIGINS = [
 CORS_ORIGIN_ALLOW_ALL = True
 CSRF_TRUSTED_ORIGINS = [
     'http://localhost:5173',
+
 ]
 CORS_ALLOW_CREDENTIALS = True
 # Database
@@ -172,7 +177,7 @@ STATIC_ROOT = BASE_DIR / 'staticfiles'
 STATIC_URL = '/static/'
 # Media files roots 
 MEDIA_URL = '/media/'
-MEDIA_ROOT = BASE_DIR/ 'media'
+MEDIA_ROOT = BASE_DIR / 'media'
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.1/ref/settings/#default-auto-field
 
