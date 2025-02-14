@@ -11,6 +11,7 @@ api.interceptors.request.use(
   (config) => {
     const accessToken = localStorage.getItem(ACCESS_TOKEN);
     if (accessToken) {
+      console.log("Authorization header being set with token:", accessToken);
       config.headers.Authorization = `Bearer ${accessToken}`;
     }
 

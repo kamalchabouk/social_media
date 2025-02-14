@@ -13,7 +13,7 @@ to be added later when i have time:
 - add the option to add Stories to the app 
 - add mention to someone
 - count the tags in the database
-
+- editing the profile make look better to choose the location
 
 
 

@@ -1,7 +1,10 @@
 import { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
+import { useParams, Link } from "react-router-dom";
 import { fetchUserProfile } from "../../api/profile-api";
+import { useAuthentication } from "../../api/auth";
+import { FaPen } from "react-icons/fa";
 import "../../styles/Profile.css";
+
 
 type UserProfile = {
   user: number;
@@ -11,11 +14,14 @@ type UserProfile = {
   birth_date: string | null;
   location: string | null;
   picture: string;
-  number_of_followers: number;
+  followers: number;
   is_following: boolean;
 };
 
 const ProfilePage = () => {
+
+  const { isAuthorized, userId } = useAuthentication();
+
   const { id } = useParams<{ id: string }>();
   const [profile, setProfile] = useState<UserProfile | null>(null);
   const [loading, setLoading] = useState(true);
@@ -41,27 +47,36 @@ const ProfilePage = () => {
 
   return (
     <div className="profile-container">
-      <h1>{profile?.user_name}'s Profile</h1>
+     <h1 className="profile-title">
+  <span>{profile?.user_name}'s Profile</span>
+  {isAuthorized && profile?.user === userId && (
+    <Link to={`/profile/${userId}/edit`} className="edit-profile-btn">
+      <FaPen />
+    </Link>
+  )}
+</h1>
       <img src={profile?.picture} alt="Profile" className="profile-picture" />
-      <p>
+      <p className="name">
         <strong>Name:</strong> {profile?.name || "No name provided"}
       </p>
-      <p>
+      <p className="bio">
         <strong>Bio:</strong> {profile?.bio || "No bio available"}
       </p>
-      <p>
+      <p className="birth-date">
         <strong>Birth Date:</strong> {profile?.birth_date || "Not provided"}
       </p>
-      <p>
+      <p className="location">
         <strong>Location:</strong> {profile?.location || "No location provided"}
       </p>
-      <p>
-        <strong>Followers:</strong> {profile?.number_of_followers}
+      <p className="followers">
+      <strong>Followers:</strong> {Array.isArray(profile?.followers) ? profile.followers.length : profile?.followers}
       </p>
-
+      
       <button className="follow-btn">
         {profile?.is_following ? "Unfollow" : "Follow"}
       </button>
+      
+
     </div>
   );
 };

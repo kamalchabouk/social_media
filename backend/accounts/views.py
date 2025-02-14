@@ -10,7 +10,7 @@ from django.contrib.auth.mixins import UserPassesTestMixin,LoginRequiredMixin
 from django.urls import reverse_lazy
 from django.contrib.auth.decorators import login_required
 #from rest_framwork_simplejwt.token import RefreshToken
-from rest_framework import generics ,status
+from rest_framework import generics ,status,permissions
 from rest_framework.permissions import AllowAny,IsAuthenticated
 from rest_framework.views import APIView
 from rest_framework.response import Response
@@ -19,8 +19,12 @@ from django.contrib.auth.models import User
 from django.contrib.auth import get_user_model
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
+from django.shortcuts import get_object_or_404
 import json
 from .serializers import UserProfileSerializer
+from rest_framework_simplejwt.authentication import JWTAuthentication
+from rest_framework.parsers import MultiPartParser, FormParser
+
 
 
 class UserProfileListView(generics.ListAPIView):
@@ -55,18 +59,23 @@ class ProfileAPIView(APIView):
 
         return Response(response_data, status=status.HTTP_200_OK)
 
-class ProfileEditView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
-    model = UserProfile
-    form_class = UserProfileForm
-    template_name = 'accounts/profile_edit.html'
+class ProfileEditAPIView(generics.UpdateAPIView):
+    queryset = UserProfile.objects.all()
+    authentication_classes = [JWTAuthentication]
+    serializer_class = UserProfileSerializer
+    permission_classes = [permissions.IsAuthenticated]
 
-    def get_success_url(self):
-        pk = self.kwargs['pk']
-        return reverse_lazy('accounts:profile', kwargs={'pk': pk})
+    def get_queryset(self):
+        """Ensure users can only update their own profile."""
+        return UserProfile.objects.filter(user=self.request.user)
 
-    def test_func(self):
-        profile = self.get_object()
-        return self.request.user == profile.user
+    def get_object(self):
+        """Restrict access to the profile owner."""
+        profile = get_object_or_404(UserProfile, pk=self.kwargs["pk"])
+        if self.request.user != profile.user:
+            self.permission_denied(self.request, message="You do not have permission to edit this profile.")
+        return profile
+
 
 class AddFollower(LoginRequiredMixin, View):
     def post(self, request, pk, *args, **kwargs):

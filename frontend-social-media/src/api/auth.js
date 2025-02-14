@@ -12,22 +12,22 @@ export const useAuthentication = () => {
       const token = localStorage.getItem(ACCESS_TOKEN);
       const googleAccessToken = localStorage.getItem(GOOGLE_ACCESS_TOKEN);
 
-      console.log("ACCESS_TOKEN", token);
-      console.log("GOOGLE_ACCESS_TOKEN", googleAccessToken);
+      console.log("ACCESS_TOKEN:", token);
+      console.log("GOOGLE_ACCESS_TOKEN:", googleAccessToken);
 
       if (token) {
         try {
           const decoded = jwtDecode(token);
           setUserId(decoded.user_id); // Extract user ID from token
-          console.log("User ID from token:", decoded.user_id);
 
           const tokenExpiration = decoded.exp;
           const now = Date.now() / 1000;
 
           if (tokenExpiration < now) {
-            await refreshToken();
+            console.log("Token expired, refreshing...");
+            await refreshToken(); // Make sure this is being triggered when expired
           } else {
-            setIsAuthorized(true);
+            setIsAuthorized(true); // Token is still valid
           }
         } catch (error) {
           console.error("Error decoding token:", error);
@@ -35,15 +35,12 @@ export const useAuthentication = () => {
         }
       } else if (googleAccessToken) {
         const isGoogleTokenValid = await validateGoogleToken(googleAccessToken);
-        if (isGoogleTokenValid) {
-          setIsAuthorized(true);
-        } else {
-          setIsAuthorized(false);
-        }
+        setIsAuthorized(isGoogleTokenValid);
       } else {
-        setIsAuthorized(false);
+        setIsAuthorized(false); // No token, set unauthorized
       }
     };
+
     auth().catch(() => setIsAuthorized(false));
   }, []);
 
@@ -54,8 +51,9 @@ export const useAuthentication = () => {
         refresh: refreshToken,
       });
       if (res.status === 200) {
+        console.log("Token refreshed:", res.data.access);
         localStorage.setItem(ACCESS_TOKEN, res.data.access);
-        setIsAuthorized(true);
+        setIsAuthorized(true);  // Token was refreshed successfully
       } else {
         setIsAuthorized(false);
       }

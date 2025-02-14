@@ -7,6 +7,7 @@ import Home from "./pages/Home/Home";
 import AuthPage from "./pages/Auth/AuthPage";
 import { useAuthentication } from "./api/auth";
 import ProfilePage from "./pages/Profile/ProfilePage";
+import ProfileEditPage from "./pages/Profile/ProfileEditPage";
 
 function App() {
   const { isAuthorized } = useAuthentication();
@@ -33,6 +34,7 @@ function App() {
           <Route path="/login" element={<ProtectedLogin />} />
           <Route path="/register" element={<ProtectedRegister />} />
           <Route path="/profile/:id" element={<ProfilePage />} />
+          <Route path="/profile/:id/edit" element={<ProfileEditPage />} />
           <Route path="/" element={<Home />} />
           <Route path="*" element={<NotFound />} />
         </Routes>

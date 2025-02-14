@@ -1,0 +1,113 @@
+/* Container for the whole profile edit page */
+.remove-pic-btn {
+  background: rgb(209, 0, 0);
+  border: none;
+  color: #ff4d4d; /* Red color for the trash icon */
+  font-size: 1000px; /* Size of the icon */
+  cursor: pointer;
+}
+
+.remove-pic-btn:hover {
+  color: #f3ecec; /* Darker red on hover */
+}
+
+.profile-container {
+  max-width: 600px;
+  margin: 0 auto;
+  padding: 20px;
+  background-color: #f8f9fa;
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+/* Title of the page */
+.profile-container h2 {
+  font-size: 2rem;
+  margin-bottom: 20px;
+  text-align: center;
+  color: #333;
+}
+
+/* Form input styles */
+.profile-container form {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+/* Label styles */
+.profile-container label {
+  font-size: 1rem;
+  font-weight: 600;
+  color: #333;
+}
+
+/* Input fields */
+.profile-container input[type="text"],
+.profile-container input[type="date"],
+.profile-container input[type="file"] {
+  padding: 10px;
+  font-size: 1rem;
+  border: 1px solid #ced4da;
+  border-radius: 4px;
+  background-color: #ffffff;
+  transition: border-color 0.2s ease-in-out;
+}
+
+.profile-container input[type="text"]:focus,
+.profile-container input[type="date"]:focus,
+.profile-container input[type="file"]:focus {
+  border-color: #007bff;
+  outline: none;
+}
+
+/* Input field for profile picture preview */
+.profile-preview {
+  width: 100px;
+  height: 100px;
+  object-fit: cover;
+  border-radius: 50%;
+  margin-bottom: 15px;
+}
+
+/* Error message style */
+.error {
+  color: #d9534f;
+  font-size: 0.9rem;
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+/* Submit button style */
+.profile-container button {
+  padding: 10px 20px;
+  font-size: 1rem;
+  background-color: #007bff;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.2s ease-in-out;
+}
+
+.profile-container button:hover {
+  background-color: #0056b3;
+}
+
+/* Loading spinner (can be customized later) */
+.loading {
+  text-align: center;
+  font-size: 1.2rem;
+  color: #007bff;
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+  .profile-container {
+    padding: 15px;
+  }
+
+  .profile-container h2 {
+    font-size: 1.5rem;
+  }
+}
