@@ -25,7 +25,7 @@ from .serializers import UserProfileSerializer
 from rest_framework_simplejwt.authentication import JWTAuthentication
 from rest_framework.parsers import MultiPartParser, FormParser
 
-
+from social.serializers import PostSerializer
 
 class UserProfileListView(generics.ListAPIView):
     queryset = User.objects.all()
@@ -75,6 +75,16 @@ class ProfileEditAPIView(generics.UpdateAPIView):
         if self.request.user != profile.user:
             self.permission_denied(self.request, message="You do not have permission to edit this profile.")
         return profile
+
+class UserPostListAPIView(generics.ListAPIView):
+    serializer_class = PostSerializer
+    permission_classes = [AllowAny]
+
+    def get_queryset(self):
+        user_id = self.kwargs.get('pk')
+
+        return Post.objects.filter(author__id=user_id)
+
 
 
 class AddFollower(LoginRequiredMixin, View):

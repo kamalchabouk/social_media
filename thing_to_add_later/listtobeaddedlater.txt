@@ -14,6 +14,7 @@ to be added later when i have time:
 - add mention to someone
 - count the tags in the database
 - editing the profile make look better to choose the location
+- tag person to in the comment or post not just names 
 
 
 

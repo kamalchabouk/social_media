@@ -8,7 +8,6 @@
 
 .navbar-logo-link {
   display: flex;
-  align-items: center;
   text-decoration: none;
 }
 
@@ -22,14 +21,14 @@
   list-style: none;
   display: flex;
   align-items: center;
-  gap: 15px;
+  gap: 10px;
   margin: 0;
   padding: 0;
 }
 
 .navbar-menu-left {
-  margin-left: 80px; /* Add space between the logo and left menu */
-  gap: 55px;
+  margin-left: flex;
+  gap: 25px;
 }
 
 .navbar-menu-left a {
@@ -64,10 +63,13 @@
 }
 
 .button-link-login {
-  color: #3d56ff;
-  font-weight: 700;
+  background-color: #3d56ff;
+  color: white !important;
+  border: none;
+  padding: 8px 15px;
+  border-radius: 4px;
+  transition: background-color 0.3s ease, color 0.3s ease;
   cursor: pointer;
-  text-decoration: none; /* Remove underline */
 }
 
 .button-link:hover,

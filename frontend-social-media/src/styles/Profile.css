@@ -1,5 +1,6 @@
 .profile-container {
-  max-width: 600px;
+  width: 100%;
+  max-width: 800px;
   margin: 20px auto;
   padding: 20px;
   border-radius: 8px;
@@ -64,6 +65,39 @@
     opacity: 1;
     transform: translateY(-50%) translateX(0);
   }
+}
+
+
+.profile-section {
+  width: 100%;
+  max-width: 800px;
+  background: white;
+  padding: 30px 10%;
+  border-radius: 10px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  text-align: center;
+}
+
+.profile-picture {
+  width: 120px;
+  height: 120px;
+  border-radius: 50%;
+  object-fit: cover;
+  margin-top: 10px;
+}
+
+.user-posts {
+  width: 100%;
+  max-width: 800px;
+  margin-top: 20px;
+}
+
+.post {
+  background: white;
+  padding: 15px;
+  border-radius: 10px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  margin-bottom: 15px;
 }
 
 .profile-picture {
@@ -180,7 +214,6 @@
   font-size: 50px;
   color: #007bff;
   text-decoration: none;
-  
 }
 
 .edit-profile-btn:hover {
@@ -190,4 +223,59 @@
 .edit-profile-btn svg {
   width: 20px;
   height: 30px;
+}
+
+/* Layout: Profile on the left, Posts on the right */
+.profile-page {
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  gap: 30px;
+  padding: 20px;
+}
+
+/* Keep the profile box design unchanged */
+.profile-container {
+  max-width: 400px; /* Adjust to make it more compact */
+  flex-shrink: 0; /* Prevent shrinking */
+}
+
+/* Make posts section take more space */
+.posts-section {
+  flex-grow: 1; /* Expand to take more width */
+  background: #fff;
+  padding: 20px;
+  border-radius: 10px;
+  box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.15);
+}
+
+/* Style for posts */
+.post-card {
+  background: #f9f9f9;
+  padding: 15px;
+  border-radius: 8px;
+  margin-bottom: 15px;
+  box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+/* Make posts stand out */
+.post-body {
+  font-size: 18px;
+  font-weight: bold;
+  margin-bottom: 5px;
+}
+
+/* Date and likes section */
+.post-meta {
+  font-size: 14px;
+  color: gray;
+}
+
+
+.post-images img {
+  width: 100%;
+  max-width: 500px;
+  height: auto;
+  border-radius: 8px;
+  margin-top: 10px;
 }

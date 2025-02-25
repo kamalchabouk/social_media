@@ -5,11 +5,16 @@ from cryptography.fernet import Fernet
 from django.conf import settings
 
 class Post(models.Model):
+    VISIBILITY_CHOICES = [
+        ('public', 'Public'),
+        ('followers', 'Followers Only'),
+    ]
     shared_body = models.TextField(blank=True,null=True)
     body =models.TextField()
     created_on = models.DateTimeField(default=timezone.now)
     shared_on = models.DateTimeField(default=timezone.now)
     author = models.ForeignKey(User, on_delete=models.CASCADE)
+    visibility = models.CharField(max_length=10, choices=VISIBILITY_CHOICES, default='public')
     shared_user= models.ForeignKey(User,on_delete=models.CASCADE,null=True,blank=True,related_name='+')
     image = models.ManyToManyField('Image', blank=True)
     video = models.FileField(upload_to='posts/videos/', null=True, blank=True)
@@ -48,7 +53,12 @@ class Post(models.Model):
         ordering = ['-created_on', '-shared_on']
 
         
+class Image(models.Model):
+	image = models.ImageField(upload_to='uploads/post_photos', blank=True, null=True)
+     
 
+class Tag (models.Model):
+     name = models.CharField(max_length=35)
 
 
 class Comment(models.Model):
@@ -139,9 +149,3 @@ class MessageModel(models.Model):
         except Exception as e:
             return "Unable to decrypt message"  # Fallback message
 
-class Image(models.Model):
-	image = models.ImageField(upload_to='uploads/post_photos', blank=True, null=True)
-     
-
-class Tag (models.Model):
-     name = models.CharField(max_length=35)

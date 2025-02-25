@@ -1,0 +1,125 @@
+.create-post-container {
+  max-width: 1000px;
+  margin: 0 auto;
+  padding: 50px;
+  background-color: white;
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+/* Title of the post creation form */
+.create-post-title {
+  font-size: 20px;
+  font-weight: bold;
+  margin-bottom: 16px;
+  color: #333;
+}
+
+/* Text area for post body */
+.create-post-textarea {
+  width: 100%;
+  padding: 12px;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  font-size: 16px;
+  resize: vertical;
+  min-height: 100px;
+  margin-bottom: 16px;
+  outline: none;
+}
+
+.create-post-textarea:focus {
+  border-color: #1877f2;
+  box-shadow: 0 0 5px rgba(24, 119, 242, 0.2);
+}
+
+/* Select dropdown for post visibility */
+.create-post-select {
+  width: 20%;
+  padding: 10px;
+  border-radius: 8px;
+  border: 1px solid #ddd;
+  background-color: #f0f2f5;
+  margin-bottom: 16px;
+}
+
+/* Label for file inputs */
+.create-post-file-label {
+  font-size: 14px;
+  font-weight: 600;
+  color: #333;
+  margin-bottom: 8px;
+  display: block;
+  margin-top: 10px;
+}
+
+/* Style for the file input buttons */
+.create-post-file {
+  width: 40%;
+  padding: 12px;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  font-size: 14px;
+  cursor: pointer;
+  background-color: #f9f9f9;
+  margin-bottom: 16px;
+}
+
+.create-post-file:hover {
+  border-color: #1877f2;
+  background-color: #eef6ff;
+}
+
+/* Tooltip style */
+.create-post-tooltip {
+  position: relative;
+  display: inline-block;
+  cursor: pointer;
+}
+
+.create-post-tooltip .create-post-tooltiptext {
+  visibility: hidden;
+  width: 120px;
+  background-color: #333;
+  color: #fff;
+  text-align: center;
+  border-radius: 6px;
+  padding: 5px 0;
+  position: absolute;
+  z-index: 1;
+  bottom: 125%; /* Position above the tooltip text */
+  left: 50%;
+  margin-left: -60px; /* Offset to center the tooltip */
+  opacity: 0;
+  transition: opacity 0.3s;
+}
+
+.create-post-tooltip:hover .create-post-tooltiptext {
+  visibility: visible;
+  opacity: 1;
+}
+
+/* Button for submitting the post */
+.create-post-button {
+  width: 100%;
+  padding: 12px;
+  background-color: #1877f2;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  margin-top: 16px;
+}
+
+.create-post-button:hover {
+  background-color: #166fe5;
+}
+
+/* Error message */
+.create-post-error {
+  color: #e74c3c;
+  margin-bottom: 16px;
+  font-size: 14px;
+}
