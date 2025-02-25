@@ -91,7 +91,7 @@ A social media platform where users can create posts, share other posts, like, u
    - Start the development server:
 
      ```bash
-     npm start
+     npm run dev
      ```
 
 ## Current Status
