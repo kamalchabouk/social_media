@@ -19,9 +19,10 @@ from rest_framework import generics
 from rest_framework.permissions import AllowAny,IsAuthenticated
 from rest_framework_simplejwt.authentication import JWTAuthentication
 from rest_framework.parsers import MultiPartParser, FormParser
-from .serializers import PostSerializer,PostCreateSerializer,CommentSerializer
+from .serializers import PostSerializer,PostCreateSerializer,CommentSerializer,CommentCreateSerializer
 from rest_framework import status
 from rest_framework.generics import ListAPIView,CreateAPIView
+
 
 class PostListAPIView(ListAPIView):
     serializer_class = PostSerializer
@@ -56,6 +57,42 @@ class PostDetailAPIView(generics.RetrieveAPIView):
     serializer_class = PostSerializer
     permission_classes = [AllowAny] 
      
+
+
+
+class CommentCreateAPIView(CreateAPIView):
+    serializer_class = CommentCreateSerializer
+    permission_classes = [IsAuthenticated]
+
+    def perform_create(self, serializer):
+        post_pk = self.kwargs.get('pk')  # Get the post ID from the URL
+        post = get_object_or_404(Post, pk=post_pk)  # Get the post object
+        
+        # Add post pk to validated_data
+        validated_data = serializer.validated_data
+        validated_data['post'] = post
+
+        # Save the comment, passing only the updated validated_data (post is now included)
+        comment = serializer.save(author=self.request.user, **validated_data)
+
+        # Optional: If you need to create tags for the comment
+        
+
+        # Create a notification for the post author
+        Notification.objects.create(
+            notification_type=2,
+            from_user=self.request.user,
+            to_user=post.author,
+            post=post
+        )
+
+        return Response(CommentSerializer(comment).data, status=status.HTTP_201_CREATED)
+
+
+
+    def post(self, request, *args, **kwargs):
+        response = super().post(request, *args, **kwargs)
+        return response
 
 
 
@@ -116,19 +153,6 @@ class CommentDetailAPIView(generics.RetrieveUpdateDestroyAPIView):
 
 
 
-
-class PostEditView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
-    model = Post
-    fields = ['body']
-    template_name = 'social/post_edit.html'
-    
-    def get_success_url(self):
-        pk = self.kwargs['pk']
-        return reverse_lazy('post-detail', kwargs={'pk': pk})
-    
-    def test_func(self):
-        post = self.get_object()
-        return self.request.user == post.author
 
 class PostDeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
     model = Post

@@ -62,3 +62,37 @@ export const fetchPostById = async (postId: number) => {
       throw new Error("Failed to fetch post");
     }
   };
+  export const createComment = async (commentData: { post: number; comment: string }) => {
+    try {
+      const token = localStorage.getItem("access");  // Ensure token is fetched
+      if (!token) {
+        throw new Error("No access token found");  // Handle error if token is missing
+      }
+  
+      const response = await fetch(`${API_POST_BASE_URL}post/${commentData.post}/comment/`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${token}`,  // Pass token in Authorization header
+        },
+        body: JSON.stringify(commentData),
+      });
+  
+      if (!response.ok) {
+        const errorText = await response.text();
+        console.error("Error response:", errorText);
+        throw new Error(`Failed to create comment: ${response.status}`);
+      }
+  
+      return await response.json();  // Return the response data
+    } catch (error) {
+      console.error("Error creating comment:", error);
+      throw error;
+    }
+  };
+  
+  
+  
+  
+  
+  

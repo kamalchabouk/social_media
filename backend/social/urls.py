@@ -6,8 +6,8 @@ urlpatterns = [
     path('posts/', PostListAPIView.as_view(), name='post-list'),
     path('post/create/', PostCreateAPIView.as_view(), name='post-create'),
     path('post/<int:pk>/', PostDetailAPIView.as_view(), name='post-detail'),
-
-    path('post/<int:post_pk>/comments/', PostCommentListCreateAPIView.as_view(), name='post-comments'),
+    path('post/<int:pk>/comment/', CommentCreateAPIView.as_view(), name='comment-create'),
+#    path('post/<int:pk>/edit/', PostEditAPIView.as_view(), name='post-edit'),
     path('post/<int:post_pk>/comments/<int:comment_pk>/', CommentDetailAPIView.as_view(), name='comment-detail'),
 #    path('post/edit/<int:post_pk>/', PostEditView.as_view(), name='post-edit'),
 #    path('post/delete/<int:post_pk>/', PostDeleteView.as_view(), name='post-delete'),

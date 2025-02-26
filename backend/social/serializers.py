@@ -11,6 +11,34 @@ class TagSerializer(serializers.ModelSerializer):
         model = Tag
         fields = ('id','name')
 
+class CommentCreateSerializer(serializers.ModelSerializer):
+    created_on = serializers.ReadOnlyField()
+    author_username = serializers.ReadOnlyField(source='author.username')
+    post = serializers.PrimaryKeyRelatedField(queryset=Post.objects.all(), write_only=True)
+
+    class Meta:
+        model = Comment
+        fields = ['comment', 'post', 'parent', 'created_on', 'author_username']
+
+    def create(self, validated_data):
+        request = self.context.get('request')
+        user = request.user
+
+        # The post is already present in validated_data, so we don't need to pass it manually
+        post = validated_data['post']
+
+        # Create the comment with the rest of the validated data (no need to pass post again)
+        comment = Comment.objects.create( **validated_data)
+        
+        # If necessary, create tags for the comment
+        
+        
+        return comment
+
+
+
+
+
 
 class CommentSerializer(serializers.ModelSerializer):
     author_username = serializers.ReadOnlyField(source='author.username')
@@ -18,12 +46,13 @@ class CommentSerializer(serializers.ModelSerializer):
     dislikes_count = serializers.SerializerMethodField()
     replies = serializers.SerializerMethodField()  # Nested replies
     tags = TagSerializer(many=True, read_only=True)
+    comment_author_picture = serializers.SerializerMethodField(read_only=True)
 
     class Meta:
         model = Comment
         fields = [
             'id', 'comment', 'created_on', 'author_id', 'author_username', 
-            'likes_count', 'dislikes_count', 'post', 'parent', 'replies', 'tags',
+            'likes_count', 'dislikes_count', 'post', 'parent', 'replies', 'tags','comment_author_picture',
         ]
 
     def get_likes_count(self, obj):
@@ -38,6 +67,12 @@ class CommentSerializer(serializers.ModelSerializer):
             replies = obj.children  # Fetch replies
             return CommentSerializer(replies, many=True).data
         return []
+
+    def get_comment_author_picture(self, obj):
+        """Fetch the author's profile picture from UserProfile."""
+        if obj.author.profile.picture:
+            return obj.author.profile.picture.url
+        return None 
 
 class PostSerializer(serializers.ModelSerializer):
     author_username = serializers.ReadOnlyField(source='author.username')
