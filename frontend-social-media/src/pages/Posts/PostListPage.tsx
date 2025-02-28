@@ -5,6 +5,8 @@ import { fetchPosts } from "../../api/post-api";
 import CreatePost from "../../components/Posts/CreatePost";
 import CreateComment from "../../components/Posts/CreateComment";
 import "../../styles/Posts/PostListPage.css";
+import DeletePost from "../../components/Posts/DeletePost";
+
 
 const PostList = () => {
   const [posts, setPosts] = useState<Post[]>([]);
@@ -70,6 +72,9 @@ const PostList = () => {
                   {new Date(post.created_on).toLocaleString()}
                 </span>
               </div>
+              <DeletePost postId={post.id} authorId={post.author_id} onDelete={(deletedPostId) => {
+  setPosts((prevPosts) => prevPosts.filter((post) => post.id !== deletedPostId));
+}} />
             </div>
 
             {/* Post Content */}

@@ -15,6 +15,7 @@ to be added later when i have time:
 - count the tags in the database
 - editing the profile make look better to choose the location
 - tag person to in the comment or post not just names 
+- add on the side the weather news to make the site looks better
 
 
 

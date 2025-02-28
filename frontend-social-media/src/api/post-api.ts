@@ -91,6 +91,29 @@ export const fetchPostById = async (postId: number) => {
     }
   };
   
+
+  export const deletePost = async (postId: number) => {
+    const token = localStorage.getItem("access");
+
+    console.log("Token: ", token);
+  
+    const response = await fetch(`${API_POST_BASE_URL}post/${postId}/delete/`, {
+      method: "DELETE",
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": `Bearer ${token}`, 
+      },
+    });
+  
+    if (!response.ok) {
+      throw new Error(`Error deleting post: ${response.statusText}`);
+    }
+  
+    return response.json();
+};
+
+  
+  
   
   
   

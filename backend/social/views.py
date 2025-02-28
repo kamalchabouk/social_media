@@ -21,10 +21,10 @@ from rest_framework_simplejwt.authentication import JWTAuthentication
 from rest_framework.parsers import MultiPartParser, FormParser
 from .serializers import PostSerializer,PostCreateSerializer,CommentSerializer,CommentCreateSerializer
 from rest_framework import status
-from rest_framework.generics import ListAPIView,CreateAPIView
 
 
-class PostListAPIView(ListAPIView):
+
+class PostListAPIView(generics.ListAPIView):
     serializer_class = PostSerializer
     permission_classes = [IsAuthenticated]
     def get_queryset(self):
@@ -33,7 +33,7 @@ class PostListAPIView(ListAPIView):
         return Post.objects.filter(author__profile__followers=user)
 
 
-class UserPostListAPIView(ListAPIView):
+class UserPostListAPIView(generics.ListAPIView):
     serializer_class = PostSerializer
     permission_classes = [AllowAny]
 
@@ -43,7 +43,7 @@ class UserPostListAPIView(ListAPIView):
         return Post.objects.filter(author__profile__followers=user_id)
 
 
-class PostCreateAPIView(CreateAPIView):
+class PostCreateAPIView(generics.CreateAPIView):
     serializer_class = PostCreateSerializer
     permission_classes = [IsAuthenticated]
 
@@ -60,7 +60,7 @@ class PostDetailAPIView(generics.RetrieveAPIView):
 
 
 
-class CommentCreateAPIView(CreateAPIView):
+class CommentCreateAPIView(generics.CreateAPIView):
     serializer_class = CommentCreateSerializer
     permission_classes = [IsAuthenticated]
 
@@ -96,40 +96,17 @@ class CommentCreateAPIView(CreateAPIView):
 
 
 
-class PostCommentListCreateAPIView(generics.ListCreateAPIView):
-    """Handles listing comments for a post and creating new comments."""
-    serializer_class = CommentSerializer
+
+class PostDeleteView(APIView):
     permission_classes = [IsAuthenticated]
 
-    def get_queryset(self):
-        """Return all comments for a given post (including replies)."""
-        post_pk = self.kwargs['post_pk']
-        return Comment.objects.filter(post_id=post_pk).order_by('-created_on')
+    def delete(self, request, post_id, *args, **kwargs):
+        post = get_object_or_404(Post, id=post_id)
+        if post.author != request.user:
+            return Response({"error": "You do not have permission to delete this post."}, status=403)
 
-    def list(self, request, *args, **kwargs):
-        """Ensure an empty list is returned instead of 404"""
-        queryset = self.get_queryset()
-        if queryset.exists():
-            return super().list(request, *args, **kwargs)
-        return Response([], status=status.HTTP_200_OK)
-
-    def perform_create(self, serializer):
-        """Create a new comment and notify the post author."""
-        post_pk = self.kwargs['post_pk']
-        post = get_object_or_404(Post, pk=post_pk)
-        
-        comment = serializer.save(author=self.request.user, post=post)
-        comment.create_tags()
-
-        # Create a notification for the post author
-        Notification.objects.create(
-            notification_type=2,
-            from_user=self.request.user,
-            to_user=post.author,
-            post=post
-        )
-
-        return Response(serializer.data, status=status.HTTP_201_CREATED)
+        post.delete()
+        return Response({"message": "Post deleted successfully."}, status=204)
 
 
 class CommentDetailAPIView(generics.RetrieveUpdateDestroyAPIView):
@@ -153,15 +130,6 @@ class CommentDetailAPIView(generics.RetrieveUpdateDestroyAPIView):
 
 
 
-
-class PostDeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
-    model = Post
-    template_name = 'social/post_delete.html'
-    success_url = reverse_lazy('post-list')
-
-    def test_func(self):
-        post = self.get_object()
-        return self.request.user == post.author
 
 class CommentReplyView(LoginRequiredMixin,View):
     def post(self, request, post_pk, pk , *args, **kwargs):
