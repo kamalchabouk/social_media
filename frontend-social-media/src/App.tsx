@@ -10,6 +10,8 @@ import ProfilePage from "./components/Profile/ProfilePage";
 import ProfileEditPage from "./pages/Profile/ProfileEditPage";
 import PostList from "./pages/Posts/PostListPage";
 import PostDetail from "./pages/Posts/PostDetails";
+import PostEdit from "./components/Posts/PostEdit";
+
 
 function App() {
   const { isAuthorized } = useAuthentication();
@@ -37,6 +39,7 @@ function App() {
           <Route path="/register" element={<ProtectedRegister />} />
           <Route path="/profile/:id" element={<ProfilePage />} />
           <Route path="/profile/:id/edit" element={<ProfileEditPage />} />
+          <Route path="/posts/:postId/edit" element={<PostEdit />} />
           <Route path="/posts" element={<PostList />} />
           <Route path="/" element={<Home />} />
           <Route path="/posts/:postId" element={<PostDetail />} />

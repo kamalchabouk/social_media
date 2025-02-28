@@ -113,7 +113,29 @@ export const fetchPostById = async (postId: number) => {
 };
 
   
-  
+export const updatePost = async (postId: number, postData: FormData) => {
+  try {
+    const token = localStorage.getItem("access");
+    if (!token) throw new Error("No access token found");
+
+    const response = await axios.put(
+      `${API_POST_BASE_URL}post/${postId}/edit/`,
+      postData,
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "multipart/form-data", // Required for file uploads
+        },
+      }
+    );
+
+    console.log("Post updated successfully:", response.data);
+    return response.data;
+  } catch (error: any) {
+    console.error("Error updating post:", error.response?.data || error.message);
+    throw new Error("Failed to update post");
+  }
+};
   
   
   

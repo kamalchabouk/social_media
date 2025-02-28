@@ -3,7 +3,11 @@ import { useParams } from "react-router-dom";
 import { fetchPostById } from "../../api/post-api";
 import { Link } from "react-router-dom";
 import DeletePost from "../../components/Posts/DeletePost";
+import { FaPen } from "react-icons/fa";
+
+import PostEdit from "../../components/Posts/PostEdit";
 import "../../styles/Posts/PostDetails.css";
+import { useAuthentication } from "../../api/auth";
 
 interface Post {
   id: number;
@@ -26,6 +30,7 @@ interface Comment {
 }
 
 const PostDetail = () => {
+  const { isAuthorized, userId } = useAuthentication();
   const { postId } = useParams<{ postId: string }>();
   const [post, setPost] = useState<Post | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -76,11 +81,17 @@ const PostDetail = () => {
             
           </div>
         </Link>
-        <DeletePost postId={post.id} authorId={post.author_id} onDelete={handlePostDelete} />
+        
       </div>
 
       {/* Post Body */}
       <div className="post-body-container">
+      {isAuthorized && post.author_id === userId && (
+            <Link to={`/posts/${post.id}/edit`} className="edit-profile-btn">
+              <FaPen />
+            </Link>
+          )}
+      <DeletePost postId={post.id} authorId={post.author_id} onDelete={handlePostDelete} className="delete-button-post-details"/>
         <p className="post-body">{post.body}</p>
       </div>
 

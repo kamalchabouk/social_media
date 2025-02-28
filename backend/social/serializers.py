@@ -128,4 +128,31 @@ class PostCreateSerializer(serializers.ModelSerializer):
         post.create_tags()
         return post
 
+class PostEditSerializer(serializers.ModelSerializer):
+    images = serializers.ListField(
+        child=serializers.ImageField(),
+        write_only=True,
+        required=False
+    )
+
+    class Meta:
+        model = Post
+        fields = ['body', 'images']  # Allow both 'body' and 'images' to be updated
+
+    def update(self, instance, validated_data):
+        """Update the post instance with new data."""
+        # Update 'body'
+        instance.body = validated_data.get('body', instance.body)
+        
+        # Handle image updates
+        images_data = validated_data.get('images', None)
+        if images_data:
+            # If new images are provided, update the post's images
+            instance.image.clear()  # Remove old images
+            for image in images_data:
+                img = Image.objects.create(image=image)
+                instance.image.add(img)
+
+        instance.save()
+        return instance
 

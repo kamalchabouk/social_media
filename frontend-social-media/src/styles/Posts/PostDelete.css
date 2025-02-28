@@ -1,4 +1,4 @@
-.post-delete-button {
+.delete-button-profile-page {
     background-color: transparent;
     border: none;
     cursor: pointer;
@@ -9,4 +9,14 @@
     margin-top: 5px; /* Adjust to your liking */
     margin-right: 10px; /* Adjust to your liking */
   }
-  
+.delete-button-post-details{
+  background-color: transparent;
+  border: none;
+  cursor: pointer;
+  font-size: 16px;
+  position: relative; /* Allow absolute positioning */
+  top: -80px; /* Position at the top */
+  right: -160px; /* Position to the right */
+  margin-top: 0; /* Adjust to your liking */
+  margin-right: 0; /* Adjust to your liking */
+}

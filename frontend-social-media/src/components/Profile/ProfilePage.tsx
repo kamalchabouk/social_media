@@ -6,6 +6,7 @@ import DeletePost from "../Posts/DeletePost";
 import { FaPen } from "react-icons/fa";
 import "../../styles/Profile.css";
 import "../../styles/Posts/PostListPage.css";
+import PostEdit from "../Posts/PostEdit";
 
 type UserProfile = {
   user: number;
@@ -15,7 +16,7 @@ type UserProfile = {
   birth_date: string | null;
   location: string | null;
   picture: string;
-  followers: number;
+  followers: { id: number; username: string }[];
   is_following: boolean;
 };
 
@@ -103,7 +104,7 @@ const ProfilePage = () => {
           {profile?.location || "No location provided"}
         </p>
         <p className="followers">
-          <strong>Followers:</strong> {profile?.followers}
+          <strong>Followers:</strong> {profile?.followers?.length || 0}
         </p>
         <button className="follow-btn">
           {profile?.is_following ? "Unfollow" : "Follow"}
@@ -121,6 +122,7 @@ const ProfilePage = () => {
           posts.map((post) => (
             <div key={post.id} className="post">
               <h3 className="post-author">{profile?.user_name}</h3>
+
               <Link to={`/posts/${post.id}`} className="post-link">
                 <p className="post-body">{post.body}</p>
               </Link>
@@ -148,13 +150,20 @@ const ProfilePage = () => {
                 <DeletePost
                   postId={post.id}
                   authorId={profile?.user}
+                  className="delete-button-profile-page"
                   onDelete={(deletedPostId) => {
                     setPosts((prevPosts) =>
                       prevPosts.filter((p) => p.id !== deletedPostId)
                     );
                   }}
                 />
+                
               )}
+              {isAuthorized && profile?.user === userId && (
+            <Link to={`/posts/${post.id}/edit`} className="edit-profile-btn">
+              <FaPen />
+            </Link>
+          )}
             </div>
           ))
         )}

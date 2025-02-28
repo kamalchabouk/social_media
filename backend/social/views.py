@@ -19,7 +19,7 @@ from rest_framework import generics
 from rest_framework.permissions import AllowAny,IsAuthenticated
 from rest_framework_simplejwt.authentication import JWTAuthentication
 from rest_framework.parsers import MultiPartParser, FormParser
-from .serializers import PostSerializer,PostCreateSerializer,CommentSerializer,CommentCreateSerializer
+from .serializers import PostSerializer,PostCreateSerializer,CommentSerializer,CommentCreateSerializer,PostEditSerializer
 from rest_framework import status
 
 
@@ -58,7 +58,37 @@ class PostDetailAPIView(generics.RetrieveAPIView):
     permission_classes = [AllowAny] 
      
 
+class PostDeleteView(APIView):
+    permission_classes = [IsAuthenticated]
 
+    def delete(self, request, post_id, *args, **kwargs):
+        post = get_object_or_404(Post, id=post_id)
+        if post.author != request.user:
+            return Response({"error": "You do not have permission to delete this post."}, status=403)
+
+        post.delete()
+        return Response({"message": "Post deleted successfully."}, status=204)
+
+
+
+class PostEditAPIView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def put(self, request, pk, format=None):
+        try:
+            post = Post.objects.get(pk=pk)
+        except Post.DoesNotExist:
+            return Response({'detail': 'Post not found.'}, status=status.HTTP_404_NOT_FOUND)
+
+        if request.user != post.author:
+            return Response({'detail': 'You do not have permission to edit this post.'}, status=status.HTTP_403_FORBIDDEN)
+
+        
+        serializer = PostEditSerializer(post, data=request.data, partial=True)
+        if serializer.is_valid():
+            serializer.save()  # Save the updated post
+            return Response(serializer.data)  # Return the updated post data
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 class CommentCreateAPIView(generics.CreateAPIView):
     serializer_class = CommentCreateSerializer
@@ -97,16 +127,6 @@ class CommentCreateAPIView(generics.CreateAPIView):
 
 
 
-class PostDeleteView(APIView):
-    permission_classes = [IsAuthenticated]
-
-    def delete(self, request, post_id, *args, **kwargs):
-        post = get_object_or_404(Post, id=post_id)
-        if post.author != request.user:
-            return Response({"error": "You do not have permission to delete this post."}, status=403)
-
-        post.delete()
-        return Response({"message": "Post deleted successfully."}, status=204)
 
 
 class CommentDetailAPIView(generics.RetrieveUpdateDestroyAPIView):

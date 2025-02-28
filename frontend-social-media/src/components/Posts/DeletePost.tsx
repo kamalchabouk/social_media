@@ -7,9 +7,10 @@ type DeletePostProps = {
   postId: number;
   authorId: number;
   onDelete: (deletedPostId: number) => void;
+  className?: string;
 };
 
-const DeletePost = ({ postId, authorId, onDelete }: DeletePostProps) => {
+const DeletePost = ({ postId, authorId, onDelete, className }: DeletePostProps) => {
   const { userId } = useAuthentication();
   const navigate = useNavigate();
 
@@ -31,7 +32,7 @@ const DeletePost = ({ postId, authorId, onDelete }: DeletePostProps) => {
   };
 
   return (
-    <button className="post-delete-button" onClick={handleDelete}>
+    <button className={`post-delete-button ${className}`} onClick={handleDelete}>
       🗑️
     </button>
   );
