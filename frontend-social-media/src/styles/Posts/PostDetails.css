@@ -1,0 +1,119 @@
+/* General Reset for all elements */
+*,
+*::before,
+*::after {
+  box-sizing: border-box; /* Include padding and border in the total width/height */
+}
+
+/* Post Container */
+.post-detail-container {
+  max-width: 600px;
+  margin: 20px auto;
+  padding: 20px;
+  background-color: white;
+  border-radius: 8px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  overflow: hidden; /* Prevent content from overflowing the container */
+}
+
+/* Post Header (Author info) */
+.post-header {
+  display: flex;
+  align-items: center;
+  margin-bottom: 15px;
+  flex-wrap: wrap; /* Ensure that elements wrap if there's not enough space */
+}
+
+.post-author-avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  margin-right: 15px;
+}
+
+.post-author {
+  font-weight: bold;
+  font-size: 16px;
+  color: #1c1e21;
+}
+
+.post-date {
+  font-size: 12px;
+  color: rgba(0, 0, 0, 0.6);
+}
+
+/* Post Body */
+.post-body {
+  font-size: 14px;
+  color: #1c1e21;
+  line-height: 1.5;
+  word-wrap: break-word; /* Prevent words from overflowing */
+}
+
+/* Post Images */
+.post-images-container {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.post-image {
+  max-width: 100%;
+  height: auto;
+  border-radius: 8px;
+  object-fit: contain; /* Ensures images scale properly */
+}
+
+/* Comments Section */
+.comment {
+  margin-top: 15px;
+  padding: 10px;
+  border-top: 1px solid #ccc;
+}
+
+.comment-header {
+  display: flex;
+  align-items: center;
+  margin-bottom: 8px;
+}
+
+.comment-author-avatar {
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  margin-right: 10px;
+}
+
+.comment-author {
+  font-weight: bold;
+  font-size: 14px;
+  color: #1c1e21;
+}
+
+.comment-date {
+  font-size: 12px;
+  color: rgba(0, 0, 0, 0.6);
+  margin-left: auto;
+}
+
+.comment-body {
+  font-size: 14px;
+  color: #1c1e21;
+  line-height: 1.5;
+  word-wrap: break-word; /* Ensure long words don't overflow */
+}
+
+/* Add some spacing between the post body and comments */
+hr {
+  margin: 20px 0;
+  border: 0;
+  border-top: 1px solid #ccc;
+}
+
+/* Ensure everything stays inside the box */
+.post-detail-container img,
+.comment-body img {
+  max-width: 100%; /* Prevent images from overflowing */
+  height: auto;
+  object-fit: contain;
+}

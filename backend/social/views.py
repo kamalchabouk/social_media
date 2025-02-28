@@ -13,94 +13,143 @@ from accounts.models import UserProfile
 from django.contrib import messages
 from cryptography.fernet import Fernet
 from django.conf import settings
+from rest_framework.views import APIView
+from rest_framework.response import Response
+from rest_framework import generics
+from rest_framework.permissions import AllowAny,IsAuthenticated
+from rest_framework_simplejwt.authentication import JWTAuthentication
+from rest_framework.parsers import MultiPartParser, FormParser
+from .serializers import PostSerializer,PostCreateSerializer,CommentSerializer,CommentCreateSerializer,PostEditSerializer
+from rest_framework import status
 
 
 
-class PostListView(LoginRequiredMixin, View):
-    def get(self, request, *args, **kwargs):
-        logged_in_user = request.user
-        posts = Post.objects.filter(
-            author__profile__followers__in=[logged_in_user.id]
+class PostListAPIView(generics.ListAPIView):
+    serializer_class = PostSerializer
+    permission_classes = [IsAuthenticated]
+    def get_queryset(self):
+        user = self.request.user
+
+        return Post.objects.filter(author__profile__followers=user)
+
+
+class UserPostListAPIView(generics.ListAPIView):
+    serializer_class = PostSerializer
+    permission_classes = [AllowAny]
+
+    def get_queryset(self):
+        user_id = self.kwargs.get('pk')
+
+        return Post.objects.filter(author__profile__followers=user_id)
+
+
+class PostCreateAPIView(generics.CreateAPIView):
+    serializer_class = PostCreateSerializer
+    permission_classes = [IsAuthenticated]
+
+    def perform_create(self, serializer):
+        serializer.save(author=self.request.user)
+
+
+
+class PostDetailAPIView(generics.RetrieveAPIView):
+    queryset = Post.objects.all()
+    serializer_class = PostSerializer
+    permission_classes = [AllowAny] 
+     
+
+class PostDeleteView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def delete(self, request, post_id, *args, **kwargs):
+        post = get_object_or_404(Post, id=post_id)
+        if post.author != request.user:
+            return Response({"error": "You do not have permission to delete this post."}, status=403)
+
+        post.delete()
+        return Response({"message": "Post deleted successfully."}, status=204)
+
+
+
+class PostEditAPIView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def put(self, request, pk, format=None):
+        try:
+            post = Post.objects.get(pk=pk)
+        except Post.DoesNotExist:
+            return Response({'detail': 'Post not found.'}, status=status.HTTP_404_NOT_FOUND)
+
+        if request.user != post.author:
+            return Response({'detail': 'You do not have permission to edit this post.'}, status=status.HTTP_403_FORBIDDEN)
+
+        
+        serializer = PostEditSerializer(post, data=request.data, partial=True)
+        if serializer.is_valid():
+            serializer.save()  # Save the updated post
+            return Response(serializer.data)  # Return the updated post data
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+class CommentCreateAPIView(generics.CreateAPIView):
+    serializer_class = CommentCreateSerializer
+    permission_classes = [IsAuthenticated]
+
+    def perform_create(self, serializer):
+        post_pk = self.kwargs.get('pk')  # Get the post ID from the URL
+        post = get_object_or_404(Post, pk=post_pk)  # Get the post object
+        
+        # Add post pk to validated_data
+        validated_data = serializer.validated_data
+        validated_data['post'] = post
+
+        # Save the comment, passing only the updated validated_data (post is now included)
+        comment = serializer.save(author=self.request.user, **validated_data)
+
+        # Optional: If you need to create tags for the comment
+        
+
+        # Create a notification for the post author
+        Notification.objects.create(
+            notification_type=2,
+            from_user=self.request.user,
+            to_user=post.author,
+            post=post
         )
-        form = PostForm()
-        share_form = ShareForm()
 
-        context = {
-            'post_list': posts,
-            'shareform':share_form,
-            'form': form,
-        }
+        return Response(CommentSerializer(comment).data, status=status.HTTP_201_CREATED)
 
-        return render(request, 'social/post_list.html', context)
+
 
     def post(self, request, *args, **kwargs):
-        logged_in_user = request.user
-        posts = Post.objects.filter(
-            author__profile__followers__in=[logged_in_user.id]
-        )
-        form = PostForm(request.POST, request.FILES)
-        share_form = ShareForm()
-        files = request.FILES.getlist('image')
+        response = super().post(request, *args, **kwargs)
+        return response
 
-        if form.is_valid():
-            new_post = form.save(commit=False)
-            new_post.author = request.user
-            new_post.save()
 
-            new_post.create_tags()
 
-            for f in files:
-                img = Image(image=f)
-                img.save()
-                new_post.image.add(img)
 
-            new_post.save()
 
-        context = {
-            'post_list': posts,
-            'shareform':share_form,
-            'form': form,
-        }
 
-        return render(request, 'social/post_list.html', context)
+class CommentDetailAPIView(generics.RetrieveUpdateDestroyAPIView):
+    """Handles retrieving, updating, and deleting a single comment."""
+    queryset = Comment.objects.all()
+    serializer_class = CommentSerializer
+    permission_classes = [IsAuthenticated]
 
-class PostDetailView(LoginRequiredMixin, View):
-    def get(self, request, pk, *args, **kwargs):
-        post = Post.objects.get(pk=pk)
-        form = CommentForm()
-        comments = Comment.objects.filter(post=post).order_by('-created_on')
+    def delete(self, request, *args, **kwargs):
+        """Allow users to delete their own comments."""
+        comment = self.get_object()
+        if comment.author != request.user:
+            return Response(
+                {"error": "You can only delete your own comments."},
+                status=status.HTTP_403_FORBIDDEN
+            )
+        return super().delete(request, *args, **kwargs)
 
-        context = {
-            'post': post,
-            'form': form,
-            'comments': comments,
-        }
 
-        return render(request, 'social/post_detail.html', context)
 
-    def post(self, request, pk, *args, **kwargs):
-        post = Post.objects.get(pk=pk)
-        form = CommentForm(request.POST)
 
-        if form.is_valid():
-            new_comment = form.save(commit=False)
-            new_comment.author = request.user
-            new_comment.post = post
-            new_comment.save()
 
-            new_comment.create_tags()
-        
-        comments = Comment.objects.filter(post=post).order_by('-created_on')
 
-        notification = Notification.objects.create(notification_type=2, from_user=request.user,to_user=post.author,post=post)
-
-        context = {
-            'post': post,
-            'form': form,
-            'comments': comments,
-        }
-
-        return render(request, 'social/post_detail.html', context)
 
 class CommentReplyView(LoginRequiredMixin,View):
     def post(self, request, post_pk, pk , *args, **kwargs):
@@ -137,27 +186,7 @@ class CommentUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
         return self.request.user == comment.author
     
 
-class PostEditView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
-    model = Post
-    fields = ['body']
-    template_name = 'social/post_edit.html'
-    
-    def get_success_url(self):
-        pk = self.kwargs['pk']
-        return reverse_lazy('post-detail', kwargs={'pk': pk})
-    
-    def test_func(self):
-        post = self.get_object()
-        return self.request.user == post.author
 
-class PostDeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
-    model = Post
-    template_name = 'social/post_delete.html'
-    success_url = reverse_lazy('post-list')
-
-    def test_func(self):
-        post = self.get_object()
-        return self.request.user == post.author
 
 
 class SharedPostView(View):

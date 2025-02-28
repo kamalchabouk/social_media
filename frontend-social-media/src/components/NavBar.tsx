@@ -13,7 +13,7 @@ function Navbar() {
 
   return (
     <div className="navbar">
-      <Link to="/" className="navbar-logo-link">
+      <Link to="/posts" className="navbar-logo-link">
         <img src={logo} alt="Logo" className="navbar-logo" />
       </Link>
       <ul className="navbar-menu-left">
@@ -47,7 +47,7 @@ function Navbar() {
               </Link>
             </li>
             <li>
-              <Link to="/register" className="button-link">
+              <Link to="/register" className="button-link-login">
                 Register
               </Link>
             </li>

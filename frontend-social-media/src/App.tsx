@@ -6,8 +6,12 @@ import NotFound from "./pages/NotFound/NotFound";
 import Home from "./pages/Home/Home";
 import AuthPage from "./pages/Auth/AuthPage";
 import { useAuthentication } from "./api/auth";
-import ProfilePage from "./pages/Profile/ProfilePage";
+import ProfilePage from "./components/Profile/ProfilePage";
 import ProfileEditPage from "./pages/Profile/ProfileEditPage";
+import PostList from "./pages/Posts/PostListPage";
+import PostDetail from "./pages/Posts/PostDetails";
+import PostEdit from "./components/Posts/PostEdit";
+
 
 function App() {
   const { isAuthorized } = useAuthentication();
@@ -27,7 +31,7 @@ function App() {
   };
 
   return (
-    <div>
+    <div className="home">
       <BrowserRouter>
         <Navbar />
         <Routes>
@@ -35,7 +39,10 @@ function App() {
           <Route path="/register" element={<ProtectedRegister />} />
           <Route path="/profile/:id" element={<ProfilePage />} />
           <Route path="/profile/:id/edit" element={<ProfileEditPage />} />
+          <Route path="/posts/:postId/edit" element={<PostEdit />} />
+          <Route path="/posts" element={<PostList />} />
           <Route path="/" element={<Home />} />
+          <Route path="/posts/:postId" element={<PostDetail />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
       </BrowserRouter>
