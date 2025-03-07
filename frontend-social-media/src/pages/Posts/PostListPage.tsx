@@ -1,12 +1,11 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import { Post } from "../../components/Posts/PostList";
+import { Post, Comment } from "../../components/Posts/PostList";
 import { fetchPosts } from "../../api/post-api";
 import CreatePost from "../../components/Posts/CreatePost";
 import CreateComment from "../../components/Posts/CreateComment";
 import "../../styles/Posts/PostListPage.css";
 import DeletePost from "../../components/Posts/DeletePost";
-
 
 const PostList = () => {
   const [posts, setPosts] = useState<Post[]>([]);
@@ -15,28 +14,29 @@ const PostList = () => {
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
 
   useEffect(() => {
-    const loadPosts = async () => {
-      try {
-        console.log("Loading posts...");
-        const data = await fetchPosts();
-        console.log("Posts data fetched:", data);
-        setPosts(data);
-      } catch (err: any) {
-        console.error("Error loading posts:", err.message);
-        setError(err.message);
-      }
-    };
     loadPosts();
   }, []);
+
+  const loadPosts = async () => {
+    try {
+      console.log("Loading posts...");
+      const data = await fetchPosts();
+      console.log("Posts data fetched:", data);
+      setPosts(data);
+    } catch (err: any) {
+      console.error("Error loading posts:", err.message);
+      setError(err.message);
+    }
+  };
 
   if (error) return <p className="text-red-500">{error}</p>;
 
   const handleImageClick = (imageUrl: string) => {
-    setSelectedImage(imageUrl); // Set the selected image to be displayed in the modal
+    setSelectedImage(imageUrl);
   };
 
   const closeModal = () => {
-    setSelectedImage(null); // Close the modal when clicking on the background
+    setSelectedImage(null);
   };
 
   return (
@@ -48,7 +48,6 @@ const PostList = () => {
       ) : (
         posts.map((post) => (
           <div key={post.id} className="post">
-            {/* Author Section */}
             <div className="post-header">
               <Link to={`/profile/${post.author_id}`} className="post-author">
                 <img
@@ -62,22 +61,24 @@ const PostList = () => {
                 />
               </Link>
               <div className="post-author-details">
-                <Link
-                  to={`/profile/${post.author_id}`}
-                  className="post-author-name"
-                >
+                <Link to={`/profile/${post.author_id}`} className="post-author-name">
                   {post.author_username}
                 </Link>
                 <span className="post-date">
                   {new Date(post.created_on).toLocaleString()}
                 </span>
               </div>
-              <DeletePost postId={post.id} authorId={post.author_id} onDelete={(deletedPostId) => {
-  setPosts((prevPosts) => prevPosts.filter((post) => post.id !== deletedPostId));
-}} />
+              <DeletePost
+                postId={post.id}
+                authorId={post.author_id}
+                onDelete={(deletedPostId) => {
+                  setPosts((prevPosts) =>
+                    prevPosts.filter((post) => post.id !== deletedPostId)
+                  );
+                }}
+              />
             </div>
 
-            {/* Post Content */}
             <Link to={`/posts/${post.id}`} className="post-body-link">
               {post.shared_body && (
                 <blockquote className="post-shared-body">
@@ -87,6 +88,18 @@ const PostList = () => {
               <p className="post-body">{post.body}</p>
             </Link>
 
+            {post.video && (
+              <div className="post-video">
+                <video controls>
+                  <source
+                    src={`${import.meta.env.VITE_API_URL}${post.video}`}
+                    type="video/mp4"
+                  />
+                  Your browser does not support the video tag.
+                </video>
+              </div>
+            )}
+
             {post.images.length > 0 && (
               <div className="post-images">
                 {post.images.map((img) => (
@@ -95,8 +108,18 @@ const PostList = () => {
                     src={img.image}
                     alt="Post"
                     className="post-image"
-                    onClick={() => handleImageClick(img.image)} // Set the image on click
+                    onClick={() => handleImageClick(img.image)}
                   />
+                ))}
+              </div>
+            )}
+
+            {post.tags.length > 0 && (
+              <div className="post-tags">
+                {post.tags.map((tag) => (
+                  <span key={tag.id} className="post-tag">
+                    #{tag.name}
+                  </span>
                 ))}
               </div>
             )}
@@ -114,39 +137,29 @@ const PostList = () => {
               >
                 💬 Comment
               </button>
-              {showCommentForm && <CreateComment postId={post.id} />}
+              {showCommentForm && (
+                <CreateComment postId={post.id} onCommentAdded={loadPosts} />
+              )}
               <button className="post-action-button">🔗 Share</button>
             </div>
 
-            {/* Facebook-style Comments Section */}
             {post.comments && post.comments.length > 0 && (
               <div className="comments-section">
                 {post.comments.map((comment) => (
                   <div key={comment.id} className="comment">
-                    {/* Comment Author Image */}
-                    <Link
-                      to={`/profile/${comment.author_id}`}
-                      className="comment-author"
-                    >
+                    <Link to={`/profile/${comment.author_id}`} className="comment-author">
                       <img
                         src={
                           comment.comment_author_picture
-                            ? `${import.meta.env.VITE_API_URL}${
-                                comment.comment_author_picture
-                              }`
+                            ? `${import.meta.env.VITE_API_URL}${comment.comment_author_picture}`
                             : "/path/to/default/profile-pic.png"
                         }
                         alt="Comment Author"
                         className="comment-author-img"
                       />
                     </Link>
-
-                    {/* Comment Body */}
                     <div className="comment-bubble">
-                      <Link
-                        to={`/profile/${comment.author_id}`}
-                        className="comment-author-name"
-                      >
+                      <Link to={`/profile/${comment.author_id}`} className="comment-author-name">
                         {comment.author_username}
                       </Link>
                       <span className="comment-date">
@@ -154,6 +167,67 @@ const PostList = () => {
                       </span>
                       <p className="comment-body">{comment.comment}</p>
                     </div>
+
+                    {/* Display likes and dislikes for each comment */}
+                    <div className="comment-actions">
+                      <button className="comment-action-button">
+                        👍 {comment.likes_count}
+                      </button>
+                      <button className="comment-action-button">
+                        👎 {comment.dislikes_count}
+                      </button>
+                    </div>
+
+                    {/* Display comment tags */}
+                    {comment.tags.length > 0 && (
+                      <div className="comment-tags">
+                        {comment.tags.map((tag, index) => (
+                          <span key={index} className="comment-tag">
+                            #{tag}
+                          </span>
+                        ))}
+                      </div>
+                    )}
+
+                    {/* Display replies to the comment */}
+                    {comment.replies.length > 0 && (
+                      <div className="replies-section">
+                        {comment.replies.map((reply) => (
+                          <div key={reply.id} className="reply">
+                            <Link to={`/profile/${reply.author_id}`} className="reply-author">
+                              <img
+                                src={
+                                  reply.comment_author_picture
+                                    ? `${import.meta.env.VITE_API_URL}${reply.comment_author_picture}`
+                                    : "/path/to/default/profile-pic.png"
+                                }
+                                alt="Reply Author"
+                                className="reply-author-img"
+                              />
+                            </Link>
+                            <div className="reply-bubble">
+                              <Link to={`/profile/${reply.author_id}`} className="reply-author-name">
+                                {reply.author_username}
+                              </Link>
+                              <span className="reply-date">
+                                {new Date(reply.created_on).toLocaleString()}
+                              </span>
+                              <p className="reply-body">{reply.comment}</p>
+                            </div>
+
+                            {/* Display likes and dislikes for replies */}
+                            <div className="reply-actions">
+                              <button className="reply-action-button">
+                                👍 {reply.likes_count}
+                              </button>
+                              <button className="reply-action-button">
+                                👎 {reply.dislikes_count}
+                              </button>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    )}
                   </div>
                 ))}
               </div>
@@ -162,7 +236,6 @@ const PostList = () => {
         ))
       )}
 
-      {/* Full-size Image Modal */}
       {selectedImage && (
         <div className="image-modal" onClick={closeModal}>
           <div className="image-modal-content">

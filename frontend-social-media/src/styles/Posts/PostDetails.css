@@ -40,6 +40,7 @@
 .post-date {
   font-size: 12px;
   color: rgba(0, 0, 0, 0.6);
+  margin-top: 5px; /* Moves the date slightly under the name */
 }
 
 /* Post Body */
@@ -48,6 +49,7 @@
   color: #1c1e21;
   line-height: 1.5;
   word-wrap: break-word; /* Prevent words from overflowing */
+  margin-top: 10px;
 }
 
 /* Post Images */
@@ -64,43 +66,56 @@
   object-fit: contain; /* Ensures images scale properly */
 }
 
-/* Comments Section */
-.comment {
+.post-details-comment {
+  background-color: #f7f7f7;
   margin-top: 15px;
-  padding: 10px;
-  border-top: 1px solid #ccc;
+  padding: 12px 16px;
+  border-radius: 8px; /* Rounded corners for the comment box */
+  border: 1px solid #e6e6e6; /* Subtle border around the comment */
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); /* Light shadow for depth */
+  display: flex;
+  flex-direction: column;
 }
 
-.comment-header {
+.post-details-comment-header {
   display: flex;
-  align-items: center;
+  align-items: center; /* Aligns name and date next to the profile picture */
   margin-bottom: 8px;
 }
 
-.comment-author-avatar {
-  width: 30px;
-  height: 30px;
+.post-details-comment-author-avatar {
+  width: 35px;
+  height: 35px;
   border-radius: 50%;
-  margin-right: 10px;
+  margin-right: 12px;
 }
 
-.comment-author {
+.post-details-comment-author {
   font-weight: bold;
-  font-size: 14px;
+  font-size: 20px;
   color: #1c1e21;
+  margin-left: 50px;
+  margin-right: 10px; /* Space between name and date */
+  margin-top: -30px;
 }
 
-.comment-date {
+.post-details-comment-date {
   font-size: 12px;
   color: rgba(0, 0, 0, 0.6);
-  margin-left: auto;
+  margin-left: 50px;
+  margin-right: 10px;
+  margin-top: -10px;
 }
 
-.comment-body {
-  font-size: 14px;
+.post-details-comment-body {
+  font-weight:lighter;
+  font-size: 17px;
   color: #1c1e21;
   line-height: 1.5;
   word-wrap: break-word; /* Ensure long words don't overflow */
+  margin-top: 20px;
+  margin-left: 47px; /* Align the comment under the name and date */
+  max-width: 90%; /* Makes the comment width a bit narrower for aesthetics */
 }
 
 /* Add some spacing between the post body and comments */
@@ -110,10 +125,30 @@ hr {
   border-top: 1px solid #ccc;
 }
 
-/* Ensure everything stays inside the box */
+/* Ensure images inside the post and comments stay inside the box */
 .post-detail-container img,
-.comment-body img {
+.post-details-comment-body img {
   max-width: 100%; /* Prevent images from overflowing */
   height: auto;
   object-fit: contain;
+}
+
+/* Edit and Delete buttons */
+.edit-profile-btn,
+.delete-button-post-details,
+.delete-button-comment-details {
+  display: inline-block;
+  margin-left: 10px;
+  cursor: pointer;
+}
+
+.edit-profile-btn:hover,
+.delete-button-post-details:hover,
+.delete-button-comment-details:hover {
+  color: #007bff;
+}
+
+.delete-button-post-details,
+.delete-button-comment-details {
+  color: #ff0000;
 }

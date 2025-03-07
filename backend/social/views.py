@@ -124,18 +124,32 @@ class CommentCreateAPIView(generics.CreateAPIView):
         response = super().post(request, *args, **kwargs)
         return response
 
+class CommentDetailAPIView(generics.RetrieveAPIView):
+    serializer_class = CommentSerializer
+    permission_classes = [AllowAny]
+
+    def get_object(self):
+        post_id = self.kwargs["pk"]
+        comment_id = self.kwargs["comment_pk"]
+        return get_object_or_404(Comment, id=comment_id, post_id=post_id)
 
 
 
 
-
-class CommentDetailAPIView(generics.RetrieveUpdateDestroyAPIView):
-    """Handles retrieving, updating, and deleting a single comment."""
+class CommentDeleteAPIView(generics.DestroyAPIView):
     queryset = Comment.objects.all()
     serializer_class = CommentSerializer
     permission_classes = [IsAuthenticated]
+    
+    def get_object(self):
+        """Retrieve the comment based on post_id and comment_id."""
+        post_id = self.kwargs["pk"]  
+        comment_id = self.kwargs["comment_pk"]  
 
-    def delete(self, request, *args, **kwargs):
+        
+        return get_object_or_404(Comment, id=comment_id, post_id=post_id)
+
+    def destroy(self, request, *args, **kwargs):
         """Allow users to delete their own comments."""
         comment = self.get_object()
         if comment.author != request.user:
@@ -143,8 +157,31 @@ class CommentDetailAPIView(generics.RetrieveUpdateDestroyAPIView):
                 {"error": "You can only delete your own comments."},
                 status=status.HTTP_403_FORBIDDEN
             )
-        return super().delete(request, *args, **kwargs)
+        return super().destroy(request, *args, **kwargs)
 
+class EditCommentAPIView(generics.UpdateAPIView):
+    """Allows users to update their own comments."""
+    queryset = Comment.objects.all()
+    serializer_class = CommentSerializer
+    permission_classes = [IsAuthenticated]
+
+    def get_object(self):
+        """Retrieve the comment based on post_id and comment_id."""
+        post_id = self.kwargs["pk"]  # post ID from URL
+        comment_id = self.kwargs["comment_pk"]  # comment ID from URL
+
+        # Ensure the comment belongs to the specified post
+        return get_object_or_404(Comment, id=comment_id, post_id=post_id)
+
+    def update(self, request, *args, **kwargs):
+        """Ensure only the comment author can update."""
+        comment = self.get_object()
+        if comment.author != request.user:
+            return Response(
+                {"error": "You can only edit your own comments."},
+                status=status.HTTP_403_FORBIDDEN
+            )
+        return super().update(request, *args, **kwargs)
 
 
 

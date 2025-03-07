@@ -137,6 +137,68 @@ export const updatePost = async (postId: number, postData: FormData) => {
   }
 };
   
+
+export const fetchCommentById = async (postId: number, commentId: number) => {
+  try {
+    const response = await axios.get(
+      `${API_POST_BASE_URL}post/${postId}/comment/${commentId}/`
+    );
+    
+    console.log("Fetched comment successfully:", response.data);
+    return response.data;
+  } catch (error: any) {
+    console.error("Error fetching comment:", error.response?.data || error.message);
+    throw new Error("Failed to fetch comment");
+  }
+};
+
+
+export const updateComment = async (commentId: number, postId: number, commentData: { comment: string }) => {
+  try {
+      const token = localStorage.getItem("access");
+      if (!token) throw new Error("No access token found");
+
+      const response = await axios.patch(
+          `${API_POST_BASE_URL}post/${postId}/comment/${commentId}/edit/`,
+          commentData,
+          {
+              headers: {
+                  Authorization: `Bearer ${token}`,
+                  "Content-Type": "application/json",
+              },
+          }
+      );
+
+      console.log("Comment updated successfully:", response.data);
+      return response.data;
+  } catch (error: any) {
+      console.error("Error updating comment:", error.response?.data || error.message);
+      throw new Error("Failed to update comment");
+  }
+};
+
+export const deleteComment = async (commentId: number, postId: number) => {
+  try {
+      const token = localStorage.getItem("access");
+      if (!token) throw new Error("No access token found");
+
+      const response = await axios.delete(
+          `${API_POST_BASE_URL}post/${postId}/comment/${commentId}/delete/`,
+          {
+              headers: {
+                  Authorization: `Bearer ${token}`,
+              },
+          }
+      );
+
+      console.log("Comment deleted successfully:", response.data);
+      return response.data;
+  } catch (error: any) {
+      console.error("Error deleting comment:", error.response?.data || error.message);
+      throw new Error("Failed to delete comment");
+  }
+};
+
   
   
   

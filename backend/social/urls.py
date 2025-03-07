@@ -6,10 +6,14 @@ urlpatterns = [
     path('posts/', PostListAPIView.as_view(), name='post-list'),
     path('post/create/', PostCreateAPIView.as_view(), name='post-create'),
     path('post/<int:pk>/', PostDetailAPIView.as_view(), name='post-detail'),
-    path('post/<int:pk>/comment/', CommentCreateAPIView.as_view(), name='comment-create'),
     path("post/<int:post_id>/delete/", PostDeleteView.as_view(), name="post-delete"),
-    path('post/<int:post_pk>/comments/<int:comment_pk>/', CommentDetailAPIView.as_view(), name='comment-detail'),
     path('post/<int:pk>/edit/', PostEditAPIView.as_view(), name='post-edit'),
+    path('post/<int:pk>/comment/', CommentCreateAPIView.as_view(), name='comment-create'),
+    path('post/<int:pk>/comment/<int:comment_pk>/',CommentDetailAPIView.as_view(),name='comment-details'),
+    path('post/<int:pk>/comment/<int:comment_pk>/delete/', CommentDeleteAPIView.as_view(), name='delete-comment'),
+    path('post/<int:pk>/comment/<int:comment_pk>/edit/',EditCommentAPIView.as_view(),name='edit-comment'),
+
+
 #    path('post/edit/<int:post_pk>/', PostEditView.as_view(), name='post-edit'),
 #    path('post/delete/<int:post_pk>/', PostDeleteView.as_view(), name='post-delete'),
 #    path('post/<int:post_pk>/comment/delete/<int:pk>/', CommentDeleteView.as_view(), name='comment-delete'),

@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { fetchPostById, updatePost } from "../../api/post-api";
 import { Post } from "../Posts/PostList"; 
-
+import "../../styles/Posts/PostEdit.css"
 
 const PostEdit = () => {
   const { postId } = useParams<{ postId: string }>();
@@ -67,30 +67,34 @@ const PostEdit = () => {
   }
 
   return (
-    <div>
+    <div className="post-edit-container">
       <h1>Edit Post</h1>
-      <form onSubmit={handleSubmit}>
-        <div>
-          <label>Body:</label>
+      <form onSubmit={handleSubmit} className="post-edit-form">
+        <div className="form-group">
+          <label htmlFor="body">Body:</label>
           <textarea
+            id="body"
             value={body}
             onChange={handleBodyChange}
             placeholder="Enter post content"
+            className="post-body-input"
           />
         </div>
-        <div>
-          <label>Images:</label>
+        <div className="form-group">
+          <label htmlFor="images">Images:</label>
           <input
             type="file"
+            id="images"
             multiple
             onChange={handleImageChange}
+            className="post-image-input"
           />
         </div>
-        <button type="submit" disabled={loading}>
+        <button type="submit" className="post-submit-button" disabled={loading}>
           {loading ? "Updating..." : "Update Post"}
         </button>
       </form>
-      {error && <div>{error}</div>}
+      {error && <div className="error-message">{error}</div>}
     </div>
   );
 };

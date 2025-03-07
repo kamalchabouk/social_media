@@ -11,6 +11,7 @@ import ProfileEditPage from "./pages/Profile/ProfileEditPage";
 import PostList from "./pages/Posts/PostListPage";
 import PostDetail from "./pages/Posts/PostDetails";
 import PostEdit from "./components/Posts/PostEdit";
+import UpdateComment from "./components/Posts/CommentEdit";
 
 
 function App() {
@@ -40,6 +41,7 @@ function App() {
           <Route path="/profile/:id" element={<ProfilePage />} />
           <Route path="/profile/:id/edit" element={<ProfileEditPage />} />
           <Route path="/posts/:postId/edit" element={<PostEdit />} />
+          <Route path="/posts/:postId/comment/:commentId/edit" element={<UpdateComment />} />
           <Route path="/posts" element={<PostList />} />
           <Route path="/" element={<Home />} />
           <Route path="/posts/:postId" element={<PostDetail />} />
