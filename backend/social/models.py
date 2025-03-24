@@ -129,7 +129,7 @@ class MessageModel(models.Model):
     thread =models.ForeignKey('ThreadModel',related_name='+',on_delete=models.CASCADE, blank=True,null=True)
     sender_user = models.ForeignKey(User,on_delete=models.CASCADE,related_name='+')
     receiver_user = models.ForeignKey(User,on_delete=models.CASCADE,related_name='+')
-    encrypted_body = models.TextField(blank=True, null=True)  # Encrypted field for message body
+    encrypted_body = models.TextField(blank=True, null=True)  
     body = models.TextField(blank=True, null=True)
     image = models.ImageField(upload_to='uploads/message_photos',blank=True,null=True)
     date = models.DateTimeField(default=timezone.now)
